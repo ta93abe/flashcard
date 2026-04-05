@@ -2,6 +2,7 @@
 import { env } from 'cloudflare:workers'
 import Base from '@/layouts/Base.astro'
 import { ReviewFlow, ReviewEmpty } from '@/components/ReviewFlow'
+import { renderQuestionMarkdown, renderExplanationMarkdown } from '@/lib/markdown'
 
 const { deckId } = Astro.params
 const mode = Astro.url.searchParams.get('mode')
@@ -60,6 +61,16 @@ if (card) {
 		topicName = topic?.name ?? null
 	}
 }
+
+// SSRでMarkdownをHTMLに変換
+let questionHtml = ''
+let explanationHtml = ''
+if (card) {
+	questionHtml = await renderQuestionMarkdown(card.question, card.type)
+	if (card.explanation) {
+		explanationHtml = await renderExplanationMarkdown(card.explanation)
+	}
+}
 ---
 
 <Base title={`${deck.name} — 学習`}>
@@ -74,6 +85,8 @@ if (card) {
 			topicName={topicName}
 			progressCurrent={reviewedRow?.cnt ?? 0}
 			progressTotal={totalRow?.cnt ?? 0}
+			questionHtml={questionHtml}
+			explanationHtml={explanationHtml}
 		/>
 	) : (
 		<ReviewEmpty client:load deckId={deckId!} deckName={deck.name} />

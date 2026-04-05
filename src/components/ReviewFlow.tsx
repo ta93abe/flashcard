@@ -1,7 +1,6 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback } from 'react'
 import { Surface, Button, Badge, Text, Meter } from '@cloudflare/kumo'
 import { ArrowLeft, Check, X, ArrowRight, BookOpenText } from '@phosphor-icons/react'
-import { marked } from 'marked'
 
 interface Card {
 	id: string
@@ -33,6 +32,8 @@ interface ReviewFlowProps {
 	topicName: string | null
 	progressCurrent: number
 	progressTotal: number
+	questionHtml: string
+	explanationHtml: string
 }
 
 type Phase = 'answering' | 'result' | 'rating'
@@ -48,7 +49,7 @@ const RATINGS = [
 
 export function ReviewFlow({
 	deckId, deckName, card, options, answers, topicName,
-	progressCurrent, progressTotal,
+	progressCurrent, progressTotal, questionHtml, explanationHtml,
 }: ReviewFlowProps) {
 	const [phase, setPhase] = useState<Phase>('answering')
 	const [selected, setSelected] = useState<number[]>([])
@@ -134,7 +135,7 @@ export function ReviewFlow({
 			<Surface style={{ padding: 28, marginBottom: 24 }}>
 				<div
 					className="prose" style={{ fontSize: 16, lineHeight: 1.8 }}
-					dangerouslySetInnerHTML={{ __html: formatQuestion(card.question, card.type) }}
+					dangerouslySetInnerHTML={{ __html: questionHtml }}
 				/>
 			</Surface>
 
@@ -222,7 +223,7 @@ export function ReviewFlow({
 							</Text>
 							<div
 								className="prose" style={{ fontSize: 14, lineHeight: 1.8 }}
-								dangerouslySetInnerHTML={{ __html: formatExplanation(card.explanation) }}
+								dangerouslySetInnerHTML={{ __html: explanationHtml }}
 							/>
 							{card.source_url && (
 								<a href={card.source_url} target="_blank" rel="noopener"
@@ -276,20 +277,3 @@ export function ReviewEmpty({ deckId, deckName }: { deckId: string; deckName: st
 	)
 }
 
-function formatQuestion(text: string, type: string): string {
-	let cleaned = text
-	// Remove option lines for select types (they're rendered separately)
-	if (type.includes('select') || type === 'domc') {
-		cleaned = cleaned.replace(/^- [A-Z]\.\s+.*/gm, '')
-	}
-	return marked.parse(cleaned, { async: false }) as string
-}
-
-function formatExplanation(text: string): string {
-	const cleaned = text
-		.replace(/\*\*正解:.+?\*\*/g, '')
-		.replace(/📖\s*\[.+?\]\(.+?\)/g, '')
-		.replace(/<!--SR:.+?-->/g, '')
-		.replace(/^\n+/, '')
-	return marked.parse(cleaned, { async: false }) as string
-}
