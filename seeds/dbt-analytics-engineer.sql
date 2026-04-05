@@ -1,7 +1,7 @@
 -- Auto-generated from dbt Analytics Engineering フラッシュカード
 -- Total: 320 cards across 8 topics
 
-INSERT OR IGNORE INTO exams (id, name, provider, guide_key, total_questions, status) VALUES ('dbt-analytics-engineer', 'dbt Analytics Engineering Certification', 'dbt Labs', 'guides/dbt-analytics-engineer/guide.md', 320, 'ready');
+INSERT OR IGNORE INTO exams (id, name, provider, guide_key, total_questions, status) VALUES ('dbt-analytics-engineer', 'dbt Analytics Engineering Certification', 'dbt Labs', 'guides/dbt-analytics-engineer/guide.md', 65, \'ready\');
 
 INSERT OR IGNORE INTO exam_topics (id, exam_id, name, weight, position) VALUES ('topic-dbt-ae-1', 'dbt-analytics-engineer', 'Developing dbt Models（モデル開発）', 0.4437, 0);
 INSERT OR IGNORE INTO exam_topics (id, exam_id, name, weight, position) VALUES ('topic-dbt-ae-2', 'dbt-analytics-engineer', 'Understanding dbt Model Governance（モデルガバナンス）', 0.0313, 1);
