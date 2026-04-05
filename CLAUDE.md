@@ -16,7 +16,7 @@ Flashcard API built with Hono on Cloudflare Workers. Currently in early stage (s
 ## Architecture
 
 - **Runtime**: Cloudflare Workers
-- **Framework**: Hono (with JSX support via `hono/jsx`)
+- **Framework**: Hono
 - **Entry point**: `src/index.ts`
 - **Config**: `wrangler.jsonc`
 
