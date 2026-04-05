@@ -15,6 +15,9 @@
       "bucket_name": "flashcard-bucket"
     }
   ],
+  "ai": {
+    "binding": "AI"
+  },
   "observability": {
     "enabled": true,
     "head_sampling_rate": 1

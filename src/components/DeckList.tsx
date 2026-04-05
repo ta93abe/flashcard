@@ -1,10 +1,11 @@
 import { Surface, Badge, Button, Text } from '@cloudflare/kumo'
-import { BookOpen, ArrowRight, Trophy } from '@phosphor-icons/react'
+import { BookOpen, ArrowRight, Trophy, Book } from '@phosphor-icons/react'
 
 interface DeckWithStats {
 	id: string
 	name: string
 	description: string | null
+	exam_id: string | null
 	cardCount: number
 	dueCount: number
 }
@@ -46,7 +47,14 @@ export function DeckList({ decks }: { decks: DeckWithStats[] }) {
 									)}
 								</div>
 							</div>
-							<ArrowRight size={20} style={{ color: 'var(--kumo-color-text-subtle)', flexShrink: 0, paddingTop: 4 }} />
+							<div style={{ display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0 }}>
+								<ArrowRight size={20} style={{ color: 'var(--kumo-color-text-subtle)' }} />
+								{deck.exam_id && (
+									<a href={`/guide/${deck.exam_id}`} onClick={(e) => e.stopPropagation()} style={{ color: 'var(--kumo-color-text-subtle)', fontSize: 12 }} title="ガイドを見る">
+										<Book size={18} />
+									</a>
+								)}
+							</div>
 						</div>
 					</Surface>
 				</a>

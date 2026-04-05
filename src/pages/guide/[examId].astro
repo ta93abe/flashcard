@@ -1,0 +1,173 @@
+---
+import { env } from 'cloudflare:workers'
+import Base from '@/layouts/Base.astro'
+import { renderMarkdown } from '@/lib/markdown'
+
+const { examId } = Astro.params
+const db = env.DB
+const bucket = env.BUCKET
+
+const exam = await db.prepare('SELECT * FROM exams WHERE id = ?')
+	.bind(examId!).first<{ id: string; name: string; spec_key: string | null; status: string; provider: string | null; total_questions: number | null; passing_score: string | null; time_minutes: number | null }>()
+
+if (!exam) {
+	return Astro.redirect('/')
+}
+
+let specHtml = ''
+if (exam.spec_key) {
+	const obj = await bucket.get(exam.spec_key)
+	if (obj) {
+		const specText = await obj.text()
+		specHtml = await renderMarkdown(specText)
+	}
+}
+
+const { results: topics } = await db.prepare(
+	'SELECT * FROM exam_topics WHERE exam_id = ? ORDER BY position'
+).bind(examId!).all()
+---
+
+<Base title={`${exam.name} — ガイド`}>
+	<div class="guide-header">
+		<a href="/" class="back-link">&lsaquo; デッキ一覧</a>
+	</div>
+
+	<h1>{exam.name}</h1>
+
+	<div class="meta-grid">
+		{exam.provider && <div class="meta-item"><span class="meta-label">提供元</span><span>{exam.provider}</span></div>}
+		{exam.total_questions && <div class="meta-item"><span class="meta-label">問題数</span><span>{exam.total_questions}問</span></div>}
+		{exam.passing_score && <div class="meta-item"><span class="meta-label">合格ライン</span><span>{exam.passing_score}</span></div>}
+		{exam.time_minutes && <div class="meta-item"><span class="meta-label">試験時間</span><span>{exam.time_minutes}分</span></div>}
+		<div class="meta-item"><span class="meta-label">ステータス</span><span class={`status status-${exam.status}`}>{exam.status}</span></div>
+	</div>
+
+	{topics.length > 0 && (
+		<section class="topics-section">
+			<h2>トピック構成</h2>
+			<div class="topics-list">
+				{(topics as any[]).map(t => (
+					<div class="topic-item">
+						<span class="topic-name">{t.name}</span>
+						<div class="topic-bar-container">
+							<div class="topic-bar" style={`width: ${Math.round((t.weight || 0) * 100)}%`} />
+						</div>
+						<span class="topic-weight">{Math.round((t.weight || 0) * 100)}%</span>
+					</div>
+				))}
+			</div>
+		</section>
+	)}
+
+	{specHtml ? (
+		<section class="spec-section">
+			<h2>試験仕様</h2>
+			<div class="prose spec-content" set:html={specHtml} />
+		</section>
+	) : (
+		<div class="empty-spec">
+			<p>ガイドはまだ解析されていません。</p>
+			<p class="hint">POST /api/guides/{examId}/process で解析を実行してください。</p>
+		</div>
+	)}
+</Base>
+
+<style>
+	.guide-header {
+		margin-bottom: 24px;
+	}
+	.back-link {
+		color: var(--kumo-color-text-subtle, #8888a4);
+		text-decoration: none;
+		font-size: 14px;
+	}
+	.back-link:hover { color: var(--kumo-color-text-default); }
+
+	.meta-grid {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 16px;
+		margin-bottom: 32px;
+		padding: 20px;
+		background: var(--kumo-color-background-raised, #1a1a24);
+		border: 1px solid var(--kumo-color-border-default, #2a2a3e);
+		border-radius: 12px;
+	}
+	.meta-item {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+	.meta-label {
+		font-size: 11px;
+		color: var(--kumo-color-text-subtle, #8888a4);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+
+	.status { font-weight: 600; font-size: 13px; }
+	.status-ready { color: #4ade80; }
+	.status-pending { color: #fbbf24; }
+	.status-analyzing { color: #60a5fa; }
+	.status-error { color: #f87171; }
+
+	.topics-section, .spec-section { margin-bottom: 32px; }
+	h2 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+
+	.topics-list {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+	.topic-item {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 12px 16px;
+		background: var(--kumo-color-background-raised, #1a1a24);
+		border: 1px solid var(--kumo-color-border-default, #2a2a3e);
+		border-radius: 8px;
+	}
+	.topic-name { flex: 1; font-size: 14px; min-width: 0; }
+	.topic-bar-container {
+		width: 120px;
+		height: 6px;
+		background: rgba(255,255,255,0.06);
+		border-radius: 3px;
+		overflow: hidden;
+	}
+	.topic-bar {
+		height: 100%;
+		background: #6366f1;
+		border-radius: 3px;
+	}
+	.topic-weight {
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--kumo-color-text-subtle);
+		width: 40px;
+		text-align: right;
+	}
+
+	.spec-content {
+		padding: 24px;
+		background: var(--kumo-color-background-raised, #1a1a24);
+		border: 1px solid var(--kumo-color-border-default, #2a2a3e);
+		border-radius: 12px;
+	}
+
+	.empty-spec {
+		text-align: center;
+		padding: 48px 24px;
+		background: var(--kumo-color-background-raised, #1a1a24);
+		border: 1px solid var(--kumo-color-border-default, #2a2a3e);
+		border-radius: 12px;
+		color: var(--kumo-color-text-subtle);
+	}
+	.hint { font-size: 12px; margin-top: 8px; font-family: monospace; }
+
+	@media (max-width: 640px) {
+		.topic-bar-container { width: 60px; }
+	}
+</style>
