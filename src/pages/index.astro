@@ -1,0 +1,47 @@
+---
+import { env } from 'cloudflare:workers'
+import Base from '@/layouts/Base.astro'
+import { DeckList } from '@/components/DeckList'
+
+const db = env.DB
+const today = new Date().toISOString().split('T')[0]
+
+const { results: deckRows } = await db.prepare('SELECT * FROM decks').all()
+
+const decks = await Promise.all(
+	(deckRows as any[]).map(async (deck) => {
+		const countRow = await db.prepare(
+			'SELECT COUNT(*) as cnt FROM cards WHERE deck_id = ?'
+		).bind(deck.id).first<{ cnt: number }>()
+
+		const dueRow = await db.prepare(
+			'SELECT COUNT(*) as cnt FROM reviews r JOIN cards c ON r.card_id = c.id WHERE c.deck_id = ? AND r.next_review <= ?'
+		).bind(deck.id, today).first<{ cnt: number }>()
+
+		return {
+			...deck,
+			cardCount: countRow?.cnt ?? 0,
+			dueCount: dueRow?.cnt ?? 0,
+		}
+	})
+)
+---
+
+<Base title="ホーム">
+	<h1>デッキ一覧</h1>
+	<p style="color: var(--kumo-color-text-subtle, #8888a4); font-size: 14px; margin-bottom: 32px;">
+		学習するデッキを選んでください
+	</p>
+	<DeckList decks={decks} />
+</Base>
+
+<style>
+	:global(.deck-card) {
+		padding: 24px;
+		cursor: pointer;
+		transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+	:global(.deck-card:hover) {
+		transform: translateY(-2px);
+	}
+</style>

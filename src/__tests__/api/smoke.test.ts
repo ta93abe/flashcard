@@ -8,14 +8,14 @@ describe('smoke test', () => {
 		await env.DB.exec("CREATE TABLE IF NOT EXISTS reviews (id TEXT PRIMARY KEY, card_id TEXT NOT NULL, easiness REAL NOT NULL DEFAULT 2.5, interval INTEGER NOT NULL DEFAULT 0, repetitions INTEGER NOT NULL DEFAULT 0, next_review TEXT NOT NULL, last_quality INTEGER, reviewed_at TEXT NOT NULL DEFAULT (datetime('now')))")
 	})
 
-	it('GET / returns HTML with デッキ一覧', async () => {
-		const res = await exports.default.fetch(new Request('http://localhost/'))
-		expect(res.status).toBe(200)
-		const text = await res.text()
-		expect(text).toContain('デッキ一覧')
-	})
-
 	it('D1 binding is available', () => {
 		expect(env.DB).toBeDefined()
+	})
+
+	it('API routes respond', async () => {
+		const res = await exports.default.fetch(new Request('http://localhost/api/decks'))
+		expect(res.status).toBe(200)
+		const body = await res.json() as { decks: any[] }
+		expect(body.decks).toBeDefined()
 	})
 })

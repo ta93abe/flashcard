@@ -1,4 +1,4 @@
-INSERT INTO card_types (id, label, description, grading, ui_component) VALUES
+INSERT OR IGNORE INTO card_types (id, label, description, grading, ui_component) VALUES
 ('single_select', '4択1正解',     '選択肢から1つ選ぶ',               'exact_match',     'SingleSelect'),
 ('multi_select',  '複数選択',     '正解が複数ある選択問題',           'partial_credit',  'MultiSelect'),
 ('domc',          '逐次正誤判定', '選択肢を1つずつ正誤判定する',       'partial_credit',  'DOMC'),

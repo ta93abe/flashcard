@@ -1,0 +1,166 @@
+---
+import { env } from 'cloudflare:workers'
+import Base from '@/layouts/Base.astro'
+import { ReviewFlow, ReviewEmpty } from '@/components/ReviewFlow'
+
+const { deckId } = Astro.params
+const mode = Astro.url.searchParams.get('mode')
+
+const db = env.DB
+const today = new Date().toISOString().split('T')[0]
+
+const deck = await db.prepare('SELECT * FROM decks WHERE id = ?')
+	.bind(deckId!).first<{ id: string; name: string }>()
+
+if (!deck) {
+	return Astro.redirect('/')
+}
+
+const totalRow = await db.prepare(
+	'SELECT COUNT(*) as cnt FROM cards WHERE deck_id = ?'
+).bind(deckId!).first<{ cnt: number }>()
+
+const reviewedRow = await db.prepare(
+	'SELECT COUNT(*) as cnt FROM reviews r JOIN cards c ON r.card_id = c.id WHERE c.deck_id = ?'
+).bind(deckId!).first<{ cnt: number }>()
+
+let card: any = null
+
+if (mode !== 'new') {
+	card = await db.prepare(
+		'SELECT c.* FROM reviews r JOIN cards c ON r.card_id = c.id WHERE c.deck_id = ? AND r.next_review <= ? ORDER BY r.next_review ASC LIMIT 1'
+	).bind(deckId!, today).first()
+}
+
+if (!card) {
+	card = await db.prepare(
+		'SELECT c.* FROM cards c WHERE c.deck_id = ? AND c.id NOT IN (SELECT card_id FROM reviews) ORDER BY c.id LIMIT 1'
+	).bind(deckId!).first()
+}
+
+let options: any[] = []
+let answers: any[] = []
+let topicName: string | null = null
+
+if (card) {
+	const optResult = await db.prepare(
+		'SELECT * FROM card_options WHERE card_id = ? ORDER BY group_name, position'
+	).bind(card.id).all()
+	options = optResult.results as any[]
+
+	const ansResult = await db.prepare(
+		'SELECT * FROM card_answers WHERE card_id = ?'
+	).bind(card.id).all()
+	answers = ansResult.results as any[]
+
+	if (card.topic_id) {
+		const topic = await db.prepare(
+			'SELECT name FROM exam_topics WHERE id = ?'
+		).bind(card.topic_id).first<{ name: string }>()
+		topicName = topic?.name ?? null
+	}
+}
+---
+
+<Base title={`${deck.name} — 学習`}>
+	{card ? (
+		<ReviewFlow
+			client:load
+			deckId={deckId!}
+			deckName={deck.name}
+			card={card}
+			options={options}
+			answers={answers}
+			topicName={topicName}
+			progressCurrent={reviewedRow?.cnt ?? 0}
+			progressTotal={totalRow?.cnt ?? 0}
+		/>
+	) : (
+		<ReviewEmpty client:load deckId={deckId!} deckName={deck.name} />
+	)}
+</Base>
+
+<style is:global>
+	.option-btn {
+		display: flex;
+		align-items: flex-start;
+		gap: 14px;
+		padding: 16px 18px;
+		background: var(--kumo-color-background-raised, #1e1e2e);
+		border: 2px solid var(--kumo-color-border-default, #2a2a3e);
+		border-radius: 8px;
+		cursor: pointer;
+		transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+		text-align: left;
+		font-size: 15px;
+		color: var(--kumo-color-text-default, #e4e4ed);
+		line-height: 1.6;
+		width: 100%;
+		font-family: inherit;
+	}
+	.option-btn:hover:not(:disabled) {
+		background: rgba(99,102,241,0.06);
+		border-color: rgba(99,102,241,0.4);
+	}
+	.option-btn.selected {
+		background: rgba(99,102,241,0.12);
+		border-color: var(--kumo-color-border-focus, #6366f1);
+	}
+	.option-btn.correct {
+		background: rgba(74,222,128,0.08);
+		border-color: #4ade80;
+	}
+	.option-btn.incorrect {
+		background: rgba(248,113,113,0.08);
+		border-color: #f87171;
+	}
+	.option-btn:disabled { cursor: default; }
+
+	.option-label {
+		flex-shrink: 0;
+		width: 28px; height: 28px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 6px;
+		font-weight: 700;
+		font-size: 13px;
+		background: rgba(255,255,255,0.06);
+		color: var(--kumo-color-text-subtle, #8888a4);
+		transition: 0.2s;
+	}
+	.option-label.selected { background: #6366f1; color: #fff; }
+	.option-label.correct { background: #4ade80; color: #000; }
+	.option-label.incorrect { background: #f87171; color: #fff; }
+
+	.option-body { flex: 1; padding-top: 3px; }
+	.result-icon { flex-shrink: 0; margin-left: auto; padding-top: 3px; }
+
+	.rating-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 8px;
+	}
+	@media (max-width: 640px) {
+		.rating-grid { grid-template-columns: repeat(2, 1fr); }
+	}
+
+	.rating-btn {
+		padding: 14px 8px;
+		background: var(--kumo-color-background-raised, #1e1e2e);
+		border: 1px solid var(--kumo-color-border-default, #2a2a3e);
+		border-radius: 8px;
+		cursor: pointer;
+		text-align: center;
+		transition: 0.2s;
+		color: var(--kumo-color-text-default, #e4e4ed);
+		font-family: inherit;
+	}
+	.rating-btn:hover:not(:disabled) {
+		background: rgba(99,102,241,0.06);
+		border-color: rgba(99,102,241,0.4);
+	}
+	.rating-btn:disabled { opacity: 0.4; cursor: default; }
+	.rating-num { font-size: 22px; font-weight: 700; display: block; margin-bottom: 4px; }
+	.rating-label { font-size: 11px; color: var(--kumo-color-text-subtle); display: block; }
+</style>

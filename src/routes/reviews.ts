@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { sm2 } from '../lib/sm2'
+import { sm2 } from '@/lib/sm2'
 
 const reviews = new Hono<{ Bindings: CloudflareBindings }>()
 
