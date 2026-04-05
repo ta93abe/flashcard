@@ -94,12 +94,16 @@ export function MatchingGame({ options, answers, onComplete, disabled }: Matchin
 
 	const handleSubmit = () => {
 		// 正解チェック
+		// answers: option_id=左側ID, sort_order=右側リスト内のインデックス(0始まり)
+		// matches: leftPos=左側position, rightPos=右側position(全体のposition)
+		// rightItemsの並び順でsort_orderを右側positionに変換する
 		const correctSet = new Set<string>()
 		for (const ans of answers) {
 			if (ans.option_id && ans.sort_order !== null) {
 				const leftOpt = options.find(o => o.id === ans.option_id)
-				if (leftOpt) {
-					correctSet.add(`${leftOpt.position}-${ans.sort_order}`)
+				const rightOpt = rightItems[ans.sort_order]
+				if (leftOpt && rightOpt) {
+					correctSet.add(`${leftOpt.position}-${rightOpt.position}`)
 				}
 			}
 		}
