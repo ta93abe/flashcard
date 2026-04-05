@@ -200,7 +200,9 @@ export function ReviewFlow({
 			{/* Submit */}
 			{phase === 'answering' && (
 				<Button
-					style={{ width: '100%' }}
+					variant="primary"
+					size="lg"
+					className="submit-btn"
 					onClick={submit}
 					disabled={hasOptions && selected.length === 0}
 				>
