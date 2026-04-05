@@ -25,13 +25,7 @@ const pageTitle = title ? `${title} — Flashcard` : 'Flashcard'
 				<slot />
 			</div>
 		</main>
-		{import.meta.env.PUBLIC_CF_WEB_ANALYTICS_TOKEN && (
-			<script
-				defer
-				src="https://static.cloudflareinsights.com/beacon.min.js"
-				data-cf-beacon={`{"token": "${import.meta.env.PUBLIC_CF_WEB_ANALYTICS_TOKEN}"}`}
-			/>
-		)}
+		<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "3d7f279a7c9943658ea2055c95ea585c"}'></script>
 	</body>
 </html>
 
