@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { Surface, Button, Badge, Text, Meter } from '@cloudflare/kumo'
+import { Surface, Button, Text } from '@cloudflare/kumo'
 import { ArrowLeft, Check, X, ArrowRight, BookOpenText, Flag } from '@phosphor-icons/react'
 
 interface Card {
@@ -135,14 +135,14 @@ export function ReviewFlow({
 			</div>
 
 			{/* Progress */}
-			<div style={{ marginBottom: 28 }}>
-				<Meter value={progressPct} />
+			<div className="progress-bar" style={{ marginBottom: 24 }}>
+				<div className="progress-fill" style={{ width: `${progressPct}%` }} />
 			</div>
 
 			{/* Topic & type tags */}
 			<div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-				{topicName && <Badge color="blue">{topicName}</Badge>}
-				<Badge color="gray">{card.type.replace('_', ' ')}</Badge>
+				{topicName && <span className="tag tag-purple">{topicName}</span>}
+				<span className="tag tag-gray">{card.type.replace('_', ' ')}</span>
 			</div>
 
 			{/* Question */}
@@ -185,7 +185,7 @@ export function ReviewFlow({
 								<span className={`option-label${showResult && isAnswer ? ' correct' : ''}${showResult && wasSelected && !isAnswer ? ' incorrect' : ''}${isSelected && !showResult ? ' selected' : ''}`}>
 									{o.label || String.fromCharCode(65 + o.position)}
 								</span>
-								<span className="option-body">{o.body}</span>
+								<span className="option-body" dangerouslySetInnerHTML={{ __html: o.body.replace(/`([^`]+)`/g, '<code>$1</code>') }} />
 								{showResult && isAnswer && (
 									<span className="result-icon"><Check size={18} weight="bold" color="#4ade80" /></span>
 								)}

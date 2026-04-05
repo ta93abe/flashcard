@@ -29,25 +29,95 @@ const decks = await Promise.all(
 
 <Base title="ホーム">
 	<h1>デッキ一覧</h1>
-	<p style="color: var(--kumo-color-text-subtle, #8888a4); font-size: 14px; margin-bottom: 32px;">
-		学習するデッキを選んでください
-	</p>
+	<p class="subtitle">学習するデッキを選んでください</p>
 	<DeckList decks={decks} />
-
-	<div style="margin-top: 32px; text-align: center;">
-		<a href="/fact-checks" style="color: var(--kumo-color-text-subtle, #8888a4); font-size: 13px; text-decoration: none;">
-			ファクトチェック履歴 &rarr;
-		</a>
-	</div>
 </Base>
 
 <style>
+	.subtitle { color: #9ca3af; font-size: 14px; margin-bottom: 32px; }
+	.footer-link { color: #6b7280; font-size: 13px; text-decoration: none; }
+	.footer-link:hover { color: #d1d5db; }
+
 	:global(.deck-card) {
 		padding: 24px;
-		cursor: pointer;
+		background: #1a1a2e;
+		border: 1px solid #2a2a42;
+		border-radius: 12px;
 		transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 	:global(.deck-card:hover) {
 		transform: translateY(-2px);
+		border-color: #6366f1;
+		background: #1e1e36;
 	}
+	:global(.deck-empty) {
+		text-align: center;
+		padding: 48px 24px;
+		background: #1a1a2e;
+		border: 1px solid #2a2a42;
+		border-radius: 12px;
+	}
+	:global(.deck-title) {
+		font-size: 20px;
+		font-weight: 700;
+		color: #f1f5f9;
+		margin-bottom: 6px;
+	}
+	:global(.deck-desc) {
+		font-size: 13px;
+		color: #94a3b8;
+		margin-bottom: 12px;
+	}
+	:global(.deck-badges) {
+		display: flex;
+		gap: 8px;
+		flex-wrap: wrap;
+		margin-bottom: 16px;
+	}
+	:global(.badge) {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		font-size: 12px;
+		font-weight: 600;
+		padding: 3px 10px;
+		border-radius: 100px;
+	}
+	:global(.badge-blue) { background: rgba(99,102,241,0.15); color: #a5b4fc; }
+	:global(.badge-orange) { background: rgba(251,191,36,0.15); color: #fbbf24; }
+	:global(.badge-green) { background: rgba(74,222,128,0.15); color: #4ade80; }
+
+	:global(.deck-actions) {
+		display: flex;
+		gap: 8px;
+		flex-wrap: wrap;
+	}
+	:global(.action-btn) {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 8px 16px;
+		font-size: 13px;
+		font-weight: 600;
+		border-radius: 8px;
+		text-decoration: none;
+		transition: 0.2s;
+	}
+	:global(.action-study) {
+		background: #6366f1;
+		color: #fff;
+	}
+	:global(.action-study:hover) { background: #818cf8; }
+	:global(.action-exam) {
+		background: rgba(251,191,36,0.12);
+		color: #fbbf24;
+		border: 1px solid rgba(251,191,36,0.3);
+	}
+	:global(.action-exam:hover) { background: rgba(251,191,36,0.2); }
+	:global(.action-guide) {
+		background: rgba(148,163,184,0.1);
+		color: #94a3b8;
+		border: 1px solid rgba(148,163,184,0.2);
+	}
+	:global(.action-guide:hover) { background: rgba(148,163,184,0.2); color: #cbd5e1; }
 </style>
