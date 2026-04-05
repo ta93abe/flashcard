@@ -60,30 +60,36 @@ function escapeSQL(s: string): string {
 	return s.replace(/'/g, "''")
 }
 
+function stripCodeBlocks(text: string): string {
+	return text.replace(/```[\s\S]*?```/g, '')
+}
+
 function detectType(questionBlock: string, answerBlock: string): string {
 	if (/正しく対応させよ|マッチング|対応付け/.test(questionBlock)) return 'matching'
 	if (/正しい順序に並べよ|並べ替え/.test(questionBlock)) return 'ordering'
 	if (/逐次正誤判定|DOMC/.test(questionBlock)) return 'domc'
 	if (/ホットスポット/.test(questionBlock)) return 'hotspot'
 
+	// コードブロックを除外してから選択肢を検索
+	const withoutCode = stripCodeBlocks(questionBlock)
+
 	// Check if answer has multiple correct
 	const ansMatch = answerBlock.match(/\*\*正解:\s*(.+?)\*\*/)
 	if (ansMatch) {
 		const ans = ansMatch[1]
-		// Multiple answers like "A, B, C, D" or "A, D"
 		const letters = ans.split(/[,、]\s*/).filter(s => /^[A-Z]$/.test(s.trim()))
 		if (letters.length > 1) return 'multi_select'
 		if (letters.length === 1) return 'single_select'
 	}
 
-	// If has choices (- A. / - B.) but single answer
-	if (/^- [A-Z]\.\s/m.test(questionBlock)) return 'single_select'
+	// If has choices (- A. / - B.) outside code blocks
+	if (/^- [A-Z]\.\s/m.test(withoutCode)) return 'single_select'
 
 	// Fill blank
 	if (/\{\{blank\}\}|穴埋め/.test(questionBlock)) return 'fill_blank'
 
-	// Free text answer
-	return 'single_select'
+	// No choices = free recall
+	return 'free_recall'
 }
 
 function parseMatchingQuestion(questionBlock: string, answerBlock: string): {
@@ -181,11 +187,12 @@ function parseSelectQuestion(questionBlock: string, answerBlock: string, type: s
 	options: ParsedCard['options']
 	answers: ParsedCard['answers']
 } {
-	// Parse choices like "- A. text"
+	// コードブロック外の選択肢のみパース
+	const withoutCode = stripCodeBlocks(questionBlock)
 	const choiceRegex = /^- ([A-Z])\.\s*(.+)/gm
 	const choices: { label: string; body: string }[] = []
 	let m: RegExpExecArray | null
-	while ((m = choiceRegex.exec(questionBlock)) !== null) {
+	while ((m = choiceRegex.exec(withoutCode)) !== null) {
 		choices.push({ label: m[1], body: m[2].trim() })
 	}
 

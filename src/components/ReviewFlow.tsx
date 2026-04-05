@@ -1,6 +1,7 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { Surface, Button, Badge, Text, Meter } from '@cloudflare/kumo'
 import { ArrowLeft, Check, X, ArrowRight, BookOpenText } from '@phosphor-icons/react'
+import { marked } from 'marked'
 
 interface Card {
 	id: string
@@ -132,7 +133,7 @@ export function ReviewFlow({
 			{/* Question */}
 			<Surface style={{ padding: 28, marginBottom: 24 }}>
 				<div
-					style={{ fontSize: 16, lineHeight: 1.8, whiteSpace: 'pre-wrap' }}
+					className="prose" style={{ fontSize: 16, lineHeight: 1.8 }}
 					dangerouslySetInnerHTML={{ __html: formatQuestion(card.question, card.type) }}
 				/>
 			</Surface>
@@ -220,7 +221,7 @@ export function ReviewFlow({
 								解説
 							</Text>
 							<div
-								style={{ fontSize: 14, lineHeight: 1.8, whiteSpace: 'pre-wrap' }}
+								className="prose" style={{ fontSize: 14, lineHeight: 1.8 }}
 								dangerouslySetInnerHTML={{ __html: formatExplanation(card.explanation) }}
 							/>
 							{card.source_url && (
@@ -276,37 +277,19 @@ export function ReviewEmpty({ deckId, deckName }: { deckId: string; deckName: st
 }
 
 function formatQuestion(text: string, type: string): string {
-	let html = text
-		.replace(/&/g, '&amp;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace(/`([^`]+)`/g, '<code>$1</code>')
-		.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-
+	let cleaned = text
 	// Remove option lines for select types (they're rendered separately)
 	if (type.includes('select') || type === 'domc') {
-		html = html.replace(/\n- [A-Z]\.\s+.*/g, '')
+		cleaned = cleaned.replace(/^- [A-Z]\.\s+.*/gm, '')
 	}
-
-	html = html
-		.replace(/^```(\w*)\n([\s\S]*?)```$/gm, (_m, _lang, code) =>
-			`<pre><code>${code}</code></pre>`
-		)
-		.replace(/\n/g, '<br/>')
-
-	return html
+	return marked.parse(cleaned, { async: false }) as string
 }
 
 function formatExplanation(text: string): string {
-	return text
-		.replace(/&/g, '&amp;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
+	const cleaned = text
 		.replace(/\*\*正解:.+?\*\*/g, '')
-		.replace(/`([^`]+)`/g, '<code>$1</code>')
-		.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
 		.replace(/📖\s*\[.+?\]\(.+?\)/g, '')
 		.replace(/<!--SR:.+?-->/g, '')
 		.replace(/^\n+/, '')
-		.replace(/\n/g, '<br/>')
+	return marked.parse(cleaned, { async: false }) as string
 }

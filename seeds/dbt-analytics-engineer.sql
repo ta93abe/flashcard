@@ -34,7 +34,7 @@ INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_ord
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-001-ans-2', 'card-dbt-ae-001', 'card-dbt-ae-001-opt-2', NULL, NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-001-ans-3', 'card-dbt-ae-001', 'card-dbt-ae-001-opt-3', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-002', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下の source 定義の `identifier` の効果は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-002', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下の source 定義の `identifier` の効果は？
 ```yaml
 sources:
   - name: stripe
@@ -58,7 +58,7 @@ INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_ord
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-003-ans-1', 'card-dbt-ae-003', 'card-dbt-ae-003-opt-1', NULL, 1);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-003-ans-2', 'card-dbt-ae-003', 'card-dbt-ae-003-opt-0', NULL, 2);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-004', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下の Jinja for ループの問題点は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-004', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下の Jinja for ループの問題点は？
 ```sql
 select
 {% for col in [''id'', ''name'', ''email''] %}
@@ -196,7 +196,7 @@ INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_ord
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-011-ans-2', 'card-dbt-ae-011', 'card-dbt-ae-011-opt-2', NULL, 0);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-011-ans-3', 'card-dbt-ae-011', 'card-dbt-ae-011-opt-3', NULL, 1);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-012', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下の seed 設定の目的は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-012', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下の seed 設定の目的は？
 ```yaml
 seeds:
   my_project:
@@ -217,7 +217,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-013-opt-3', 'card-dbt-ae-013', 3, 'D', 'APIキーの権限を管理する', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-013-ans-0', 'card-dbt-ae-013', 'card-dbt-ae-013-opt-0', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-014', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下のモデルで `--full-refresh` を実行すると何が起きるか？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-014', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下のモデルで `--full-refresh` を実行すると何が起きるか？
 ```sql
 {{ config(materialized=''incremental'', unique_key=''id'') }}
 select * from {{ ref(''stg_orders'') }}
@@ -316,7 +316,7 @@ INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation,
 - D. パターンマッチング', '**正解: B**
 `{{ "Hello" ~ " " ~ "World" }}` → `Hello World`。Python の `+` と同様に文字列を連結する。', 'https://docs.getdbt.com/docs/build/jinja-macros');
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-022', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下のJinja で `adapter.get_relation()` の用途は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-022', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下のJinja で `adapter.get_relation()` の用途は？
 ```sql
 {% set rel = adapter.get_relation(
     database=target.database,
@@ -328,7 +328,7 @@ INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation,
 {% endif %}
 ```', '**DWH上にテーブル/ビューが存在するかどうかを確認**する。`adapter.get_relation()` はリレーションが存在すれば Relation オブジェクトを返し、存在しなければ `none` を返す。', 'https://docs.getdbt.com/docs/build/jinja-macros');
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-023', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下のモデルをCTEを使ってリファクタリングする際の推奨パターンは？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-023', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下のモデルをCTEを使ってリファクタリングする際の推奨パターンは？
 ```sql
 select
     o.order_id,
@@ -512,7 +512,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-034-opt-3', 'card-dbt-ae-034', 3, 'D', '`dbt run-operation my_macro(key=value)`', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-034-ans-0', 'card-dbt-ae-034', 'card-dbt-ae-034-opt-0', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-035', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下の `dbt_project.yml` 設定で、`models/staging/` のモデルが view、`models/marts/` が table になる理由は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-035', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下の `dbt_project.yml` 設定で、`models/staging/` のモデルが view、`models/marts/` が table になる理由は？
 ```yaml
 models:
   my_project:
@@ -558,7 +558,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-038-opt-3', 'card-dbt-ae-038', 3, 'D', 'データベース操作のログを出力する', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-038-ans-0', 'card-dbt-ae-038', 'card-dbt-ae-038-opt-1', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-039', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '各 dbt リソースの設定優先順位（低い順 → 高い順）を正しく並べよ。
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-039', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '各 dbt リソースの設定優先順位（低い順 → 高い順）を正しく並べよ。
 ステップ:
 - (a) モデルSQL内の `config()`
 - (b) `dbt_project.yml` のプロジェクト設定
@@ -595,7 +595,7 @@ INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_ord
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-040-ans-2', 'card-dbt-ae-040', 'card-dbt-ae-040-opt-2', NULL, 2);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-040-ans-3', 'card-dbt-ae-040', 'card-dbt-ae-040-opt-3', NULL, 0);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-041', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '`dbt_project.yml` で `dispatch` を設定する例として正しいものは？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-041', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '`dbt_project.yml` で `dispatch` を設定する例として正しいものは？
 ```yaml
 dispatch:
   - macro_namespace: dbt_utils
@@ -603,7 +603,7 @@ dispatch:
 ```
 この設定の効果は？', '`dbt_utils` パッケージのマクロを呼び出す際、まず `my_project` 内のオーバーライドマクロを検索し、見つからなければ `dbt_utils` のデフォルト実装を使用する。**パッケージのマクロを自プロジェクトでカスタマイズ**するためのパターン。', 'https://docs.getdbt.com/docs/build/packages');
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-042', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下の Jinja の `{% if %}` ブロックの問題点は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-042', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下の Jinja の `{% if %}` ブロックの問題点は？
 ```sql
 {% if target.name = ''prod'' %}
   select * from {{ ref(''fct_orders'') }}
@@ -656,7 +656,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-045-opt-3', 'card-dbt-ae-045', 3, 'D', '`updated_at`', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-045-ans-0', 'card-dbt-ae-045', 'card-dbt-ae-045-opt-1', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-046', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下の `generate_schema_name` マクロの動作は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-046', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下の `generate_schema_name` マクロの動作は？
 ```sql
 {% macro generate_schema_name(custom_schema_name, node) %}
     {% if target.name == ''prod'' %}
@@ -681,7 +681,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-047-opt-3', 'card-dbt-ae-047', 3, 'D', '2つのモデルを実行する', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-047-ans-0', 'card-dbt-ae-047', 'card-dbt-ae-047-opt-0', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-048', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下の sources.yml でテーブルが4つあるのに source が4つ定義されている問題は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-048', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下の sources.yml でテーブルが4つあるのに source が4つ定義されている問題は？
 ```yaml
 sources:
   - name: customers
@@ -721,7 +721,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-049-opt-2', 'card-dbt-ae-049', 2, 'C', '`[''sql'']`', NULL);
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-049-opt-3', 'card-dbt-ae-049', 3, 'D', '`[''dbt_models'']`', NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-050', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下のモデルで `{{ target.name }}` を使う目的は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-050', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下のモデルで `{{ target.name }}` を使う目的は？
 ```sql
 {% if target.name == ''prod'' %}
   select * from {{ ref(''fct_orders'') }}
@@ -859,7 +859,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-060-ans-0', 'card-dbt-ae-060', 'card-dbt-ae-060-opt-0', NULL, NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-060-ans-1', 'card-dbt-ae-060', 'card-dbt-ae-060-opt-2', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-061', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下のコードで `{% do %}` タグの効果は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-061', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下のコードで `{% do %}` タグの効果は？
 ```sql
 {% do log("Processing model: " ~ this, info=True) %}
 ```', '`{% do %}` はJinja式を**評価するが出力はしない**。`log()` 関数を呼び出してメッセージを出力するが、SQLには何も追加されない。', 'https://docs.getdbt.com/docs/build/jinja-macros');
@@ -962,7 +962,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-069-opt-2', 'card-dbt-ae-069', 2, 'C', '`[''queries'']`', NULL);
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-069-opt-3', 'card-dbt-ae-069', 3, 'D', '`[''sql'']`', NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-070', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下の selector YAML 定義の用途は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-070', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下の selector YAML 定義の用途は？
 ```yaml
 selectors:
   - name: nightly_run
@@ -998,7 +998,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-072-opt-2', 'card-dbt-ae-072', 2, 'C', '`import`', NULL);
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-072-opt-3', 'card-dbt-ae-072', 3, 'D', '`run`', NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-073', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下の設定で seed の `quote_columns` の効果は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-073', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下の設定で seed の `quote_columns` の効果は？
 ```yaml
 seeds:
   my_project:
@@ -1115,7 +1115,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-081-opt-3', 'card-dbt-ae-081', 3, 'D', '変数のバリデーションルール', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-081-ans-0', 'card-dbt-ae-081', 'card-dbt-ae-081-opt-2', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-082', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下の snapshot 設定の問題点は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-082', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下の snapshot 設定の問題点は？
 ```yaml
 snapshots:
   - name: orders_snapshot
@@ -1152,7 +1152,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-084-opt-3', 'card-dbt-ae-084', 3, 'D', '`WHERE dbt_scd_id IS NOT NULL`', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-084-ans-0', 'card-dbt-ae-084', 'card-dbt-ae-084-opt-0', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-085', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下のモデルでビルド順序が不正になる原因箇所は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-085', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下のモデルでビルド順序が不正になる原因箇所は？
 ```sql
 select
   a.account_id,
@@ -1200,7 +1200,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-088-opt-3', 'card-dbt-ae-088', 3, 'D', '本番環境への自動デプロイを行う', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-088-ans-0', 'card-dbt-ae-088', 'card-dbt-ae-088-opt-2', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-089', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下のコマンドで `--vars` フラグの効果は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-089', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下のコマンドで `--vars` フラグの効果は？
 ```bash
 dbt run --vars ''{"start_date": "2024-06-01"}''
 ```', '**`dbt_project.yml` の `vars` で定義された `start_date` をオーバーライド**して `''2024-06-01''` に設定する。モデル内の `{{ var(''start_date'') }}` がこの値を返す。', 'https://docs.getdbt.com/reference/commands/run');
@@ -1217,7 +1217,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-090-opt-3', 'card-dbt-ae-090', 3, 'D', '不要なモデルを自動削除する', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-090-ans-0', 'card-dbt-ae-090', 'card-dbt-ae-090-opt-0', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-091', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '`dbt_project.yml` で `on-run-start` にSQLを設定する例として正しいものは？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-091', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '`dbt_project.yml` で `on-run-start` にSQLを設定する例として正しいものは？
 ```yaml
 on-run-start:
   - "CREATE SCHEMA IF NOT EXISTS {{ target.schema }}"
@@ -1295,7 +1295,7 @@ INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_ord
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-095-ans-2', 'card-dbt-ae-095', 'card-dbt-ae-095-opt-2', NULL, 1);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-095-ans-3', 'card-dbt-ae-095', 'card-dbt-ae-095-opt-3', NULL, 0);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-096', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下の post-hook 設定で、テーブルに対して行われる操作は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-096', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下の post-hook 設定で、テーブルに対して行われる操作は？
 ```sql
 {{ config(
     materialized=''table'',
@@ -1303,7 +1303,7 @@ INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation,
 ) }}
 ```', 'テーブルのビルド完了後に、`reporter` ロールに **SELECT 権限を付与**する。`{{ this }}` は現在のモデルのテーブル名に展開される。', 'https://docs.getdbt.com/docs/build/materializations');
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-097', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下のsnapshot YAML定義の各要素の役割を対応させよ。
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-097', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下のsnapshot YAML定義の各要素の役割を対応させよ。
 ```yaml
 snapshots:
   - name: orders_snapshot
@@ -1343,7 +1343,7 @@ INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_ord
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-098-ans-1', 'card-dbt-ae-098', 'card-dbt-ae-098-opt-1', NULL, NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-098-ans-2', 'card-dbt-ae-098', 'card-dbt-ae-098-opt-2', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-099', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下の incremental モデルの問題点は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-099', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下の incremental モデルの問題点は？
 ```sql
 {{ config(
     materialized=''incremental'',
@@ -1392,7 +1392,7 @@ INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_ord
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-101-ans-1', 'card-dbt-ae-101', 'card-dbt-ae-101-opt-1', NULL, NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-101-ans-2', 'card-dbt-ae-101', 'card-dbt-ae-101-opt-2', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-102', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下の grants 設定で付与される権限は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-102', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下の grants 設定で付与される権限は？
 ```yaml
 models:
   - name: fct_orders
@@ -1404,7 +1404,7 @@ models:
 - `etl_role` に **INSERT** 権限を付与
 モデルのビルド後に自動的にGRANT文が実行される。', 'https://docs.getdbt.com/reference/resource-configs/grants');
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-103', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下の Jinja コードで `{% if execute %}` ガードが必要な理由は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-103', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下の Jinja コードで `{% if execute %}` ガードが必要な理由は？
 ```sql
 {% set results = run_query("select distinct status from " ~ ref(''orders'')) %}
 ```', '**dbtの parse フェーズでは `run_query` が実行できない**ため、`{% if execute %}` で実行フェーズでのみクエリを実行するようガードする必要がある。parse フェーズでは DWH 接続がない。', 'https://docs.getdbt.com/docs/build/jinja-macros');
@@ -1435,7 +1435,7 @@ INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_ord
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-104-ans-2', 'card-dbt-ae-104', 'card-dbt-ae-104-opt-2', NULL, 3);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-104-ans-3', 'card-dbt-ae-104', 'card-dbt-ae-104-opt-3', NULL, 0);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-105', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-1', '以下のYAMLはどのdbt機能の定義か？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-105', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-1', '以下のYAMLはどのdbt機能の定義か？
 ```yaml
 semantic_models:
   - name: orders
@@ -2140,7 +2140,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-156-opt-3', 'card-dbt-ae-156', 3, 'D', '`+` は1つ上のみ、`1+` は上流すべて', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-156-ans-0', 'card-dbt-ae-156', 'card-dbt-ae-156-opt-0', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-157', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-3', '以下のモデルバージョン定義で、`ref(''dim_customers'')` がv1を返してしまう原因は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-157', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-3', '以下のモデルバージョン定義で、`ref(''dim_customers'')` がv1を返してしまう原因は？
 ```yaml
 models:
   - name: dim_customers
@@ -2158,7 +2158,7 @@ models:
       - v: 2
 ```', 'https://docs.getdbt.com/reference/dbt-jinja-functions/ref');
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-158', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-3', '以下の contract 設定でビルドエラーになる原因は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-158', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-3', '以下の contract 設定でビルドエラーになる原因は？
 ```yaml
 models:
   - name: dim_products
@@ -2178,7 +2178,7 @@ models:
         data_type: varchar(100)
 ```', 'https://docs.getdbt.com/docs/collaborate/govern/model-contracts');
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-159', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-3', '以下の incremental モデルで2回目以降の実行で全データが処理されてしまう原因は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-159', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-3', '以下の incremental モデルで2回目以降の実行で全データが処理されてしまう原因は？
 ```sql
 {{ config(materialized=''incremental'', unique_key=''id'') }}
 select *
@@ -2250,7 +2250,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-164-opt-3', 'card-dbt-ae-164', 3, 'D', '削除された行を別テーブルに移動する', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-164-ans-0', 'card-dbt-ae-164', 'card-dbt-ae-164-opt-0', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-165', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-3', '以下のモデルで `ambiguous column name` エラーが発生する原因は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-165', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-3', '以下のモデルで `ambiguous column name` エラーが発生する原因は？
 ```sql
 select
   customer_id,
@@ -2314,7 +2314,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-169-opt-3', 'card-dbt-ae-169', 3, 'D', '各カラムが独立したキーとして使用される', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-169-ans-0', 'card-dbt-ae-169', 'card-dbt-ae-169-opt-1', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-170', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-3', '以下のモデルで `Compilation Error: ''source'' is undefined` が発生する原因は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-170', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-3', '以下のモデルで `Compilation Error: ''source'' is undefined` が発生する原因は？
 ```sql
 select *
 from source(''stripe'', ''payments'')
@@ -2503,7 +2503,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-183-opt-3', 'card-dbt-ae-183', 3, 'D', '`{{ this }}` の使用が原因', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-183-ans-0', 'card-dbt-ae-183', 'card-dbt-ae-183-opt-2', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-184', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-3', '以下のモデルで `grants` が適用されない原因は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-184', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-3', '以下のモデルで `grants` が適用されない原因は？
 ```yaml
 models:
   - name: dim_customers
@@ -2519,7 +2519,7 @@ models:
         select: [''analyst_role'']
 ```', 'https://docs.getdbt.com/reference/resource-configs/grants');
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-185', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-3', '以下のエラーの原因と解決策は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-185', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-3', '以下のエラーの原因と解決策は？
 ```
 Runtime Error: Database error while listing schemas
 ```', '**DWH への接続に問題がある**。考えられる原因:
@@ -2554,7 +2554,7 @@ INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_ord
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-186-ans-2', 'card-dbt-ae-186', 'card-dbt-ae-186-opt-2', NULL, 0);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-186-ans-3', 'card-dbt-ae-186', 'card-dbt-ae-186-opt-3', NULL, 1);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-187', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-3', '以下の config 設定で Python モデルのビルドが失敗する原因は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-187', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-3', '以下の config 設定で Python モデルのビルドが失敗する原因は？
 ```python
 def model(dbt, session):
     dbt.config(materialized=''view'')
@@ -2762,7 +2762,7 @@ INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_ord
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-201-ans-1', 'card-dbt-ae-201', 'card-dbt-ae-201-opt-2', NULL, NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-201-ans-2', 'card-dbt-ae-201', 'card-dbt-ae-201-opt-3', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-202', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-4', '開発環境を高速にセットアップするために `dbt clone` を使う場合の正しいコマンドは？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-202', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-4', '開発環境を高速にセットアップするために `dbt clone` を使う場合の正しいコマンドは？
 ```bash
 dbt clone ______ path/to/prod-artifacts
 ```', '**正解: `--state`**
@@ -2860,7 +2860,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-209-opt-3', 'card-dbt-ae-209', 3, 'D', '`daily` タグのモデルのテストのみ実行する', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-209-ans-0', 'card-dbt-ae-209', 'card-dbt-ae-209-opt-2', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-210', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-5', '以下の設定でテストが最大10件の失敗まで警告、100件を超えるとエラーになる理由は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-210', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-5', '以下の設定でテストが最大10件の失敗まで警告、100件を超えるとエラーになる理由は？
 ```yaml
 data_tests:
   - not_null:
@@ -2872,7 +2872,7 @@ data_tests:
 - `error_if: ">100"` — 失敗行が100件を超えると**エラー**
 10件以下は PASS、11-100件は WARN、101件以上は ERROR。`severity` は `error_if`/`warn_if` がない場合のフォールバック。', 'https://docs.getdbt.com/docs/build/data-tests');
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-211', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-5', '以下の YAML でエラーが発生する原因は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-211', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-5', '以下の YAML でエラーが発生する原因は？
 ```yaml
 models:
   - name: dim_customers
@@ -2905,7 +2905,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-212-opt-3', 'card-dbt-ae-212', 3, 'D', 'テストを定義できない', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-212-ans-0', 'card-dbt-ae-212', 'card-dbt-ae-212-opt-1', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-213', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-5', '以下のテスト設定で `accepted_values` テストが警告のみで失敗しない理由は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-213', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-5', '以下のテスト設定で `accepted_values` テストが警告のみで失敗しない理由は？
 ```yaml
 columns:
   - name: status
@@ -2916,7 +2916,7 @@ columns:
             severity: warn
 ```', '**`severity: warn`** が設定されているため、テスト失敗時にエラーではなく警告のみ発生する。ビルドは停止しない。', 'https://docs.getdbt.com/docs/build/data-tests');
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-214', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-5', '以下の singular test で問題となる箇所は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-214', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-5', '以下の singular test で問題となる箇所は？
 ```sql
 -- tests/check_valid_orders.sql
 select count(*)
@@ -2981,7 +2981,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-217-opt-3', 'card-dbt-ae-217', 3, 'D', 'incremental のテストのみ実行する', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-217-ans-0', 'card-dbt-ae-217', 'card-dbt-ae-217-opt-0', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-218', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-5', '以下のカスタム generic test の問題点は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-218', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-5', '以下のカスタム generic test の問題点は？
 ```sql
 {% test positive_values(model, column_name) %}
 select {{ column_name }}
@@ -3275,7 +3275,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-237-opt-3', 'card-dbt-ae-237', 3, 'D', '違いはない', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-237-ans-0', 'card-dbt-ae-237', 'card-dbt-ae-237-opt-0', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-238', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-5', '以下のテスト設定で、`store_failures_as` の効果は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-238', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-5', '以下のテスト設定で、`store_failures_as` の効果は？
 ```yaml
 data_tests:
   - unique:
@@ -3559,7 +3559,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-255-opt-3', 'card-dbt-ae-255', 3, 'D', 'テストの結果を返す', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-255-ans-0', 'card-dbt-ae-255', 'card-dbt-ae-255-opt-0', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-256', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-5', '以下のテスト定義で意図通りに動作しない箇所は？（dbt v1.8+）
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-256', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-5', '以下のテスト定義で意図通りに動作しない箇所は？（dbt v1.8+）
 ```yaml
 models:
   - name: fct_orders
@@ -3599,7 +3599,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-258-opt-2', 'card-dbt-ae-258', 2, 'C', '`[''data_tests'']`', NULL);
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-258-opt-3', 'card-dbt-ae-258', 3, 'D', '`[''checks'']`', NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-259', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-5', '以下の YAML で YAMLアンカーを使っている目的は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-259', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-5', '以下の YAML で YAMLアンカーを使っている目的は？
 ```yaml
 defaults: &column_defaults
   data_tests:
@@ -3690,7 +3690,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-265-opt-2', 'card-dbt-ae-265', 2, 'C', '`push_docs`', NULL);
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-265-opt-3', 'card-dbt-ae-265', 3, 'D', '`write_docs`', NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-266', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-6', '以下の YAML でパースエラーが発生する原因は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-266', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-6', '以下の YAML でパースエラーが発生する原因は？
 ```yaml
 models:
   - name: fct_orders
@@ -3703,7 +3703,7 @@ models:
 ```
 または `>` で複数行テキストにする。', 'https://docs.getdbt.com/docs/build/documentation');
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-267', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-6', '以下のYAMLのコンパイルエラーの原因は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-267', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-6', '以下のYAMLのコンパイルエラーの原因は？
 ```yaml
 models:
   - name: dim_customers
@@ -3794,7 +3794,7 @@ INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_ord
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-272-ans-3', 'card-dbt-ae-272', 'card-dbt-ae-272-opt-0', NULL, 3);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-272-ans-4', 'card-dbt-ae-272', 'card-dbt-ae-272-opt-2', NULL, 4);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-273', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-6', '以下の `{% docs %}` ブロックの構文エラーを修正せよ。
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-273', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-6', '以下の `{% docs %}` ブロックの構文エラーを修正せよ。
 ```markdown
 {% docs orders_status }
 Orders can be: placed, shipped, completed, returned.
@@ -3803,7 +3803,7 @@ Orders can be: placed, shipped, completed, returned.
 1. 開始タグ: `{% docs orders_status }` → `{% docs orders_status %}`（`%` が欠けている）
 2. 終了タグ: `{% enddoc %}` → `{% enddocs %}`（`s` が欠けている）', 'https://docs.getdbt.com/docs/build/documentation');
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-274', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-6', '以下の YAML で `description` に `{{ doc() }}` を使う利点は何か？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-274', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-6', '以下の YAML で `description` に `{{ doc() }}` を使う利点は何か？
 ```yaml
 models:
   - name: fct_orders
@@ -3825,7 +3825,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-275-opt-2', 'card-dbt-ae-275', 2, 'C', 'YAML で `depends_on` を明示的に定義しているため', NULL);
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-275-opt-3', 'card-dbt-ae-275', 3, 'D', 'dbt Cloud がクエリログを分析するため', NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-276', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-6', '各 dbt アーティファクトの生成タイミング（左列）を対応させよ。
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-276', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-6', '各 dbt アーティファクトの生成タイミング（左列）を対応させよ。
 | 左列 | 右列 |
 |---|---|
 | 1. `manifest.json` | a. `dbt docs generate` 実行時 |
@@ -4002,7 +4002,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-289-opt-3', 'card-dbt-ae-289', 3, 'D', '`event_time`', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-289-ans-0', 'card-dbt-ae-289', 'card-dbt-ae-289-opt-1', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-290', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-7', '以下の exposure 定義で不足している必須項目は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-290', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-7', '以下の exposure 定義で不足している必須項目は？
 ```yaml
 exposures:
   - name: weekly_sales_dashboard
@@ -4028,7 +4028,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-291-opt-2', 'card-dbt-ae-291', 2, 'C', '`freshness_field`', NULL);
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-291-opt-3', 'card-dbt-ae-291', 3, 'D', '`updated_at`', NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-292', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-7', '以下の source freshness 設定でエラーになる原因は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-292', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-7', '以下の source freshness 設定でエラーになる原因は？
 ```yaml
 sources:
   - name: jaffle_shop
@@ -4054,7 +4054,7 @@ INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_ord
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-293-ans-1', 'card-dbt-ae-293', 'card-dbt-ae-293-opt-2', NULL, NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-293-ans-2', 'card-dbt-ae-293', 'card-dbt-ae-293-opt-3', NULL, NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-294', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-7', '以下の exposure 定義で `depends_on` の書き方として正しいものは？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-294', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-7', '以下の exposure 定義で `depends_on` の書き方として正しいものは？
 ```yaml
 exposures:
   - name: sales_dashboard
@@ -4196,7 +4196,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-302-opt-2', 'card-dbt-ae-302', 2, 'C', '`test freshness`', NULL);
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-302-opt-3', 'card-dbt-ae-302', 3, 'D', '`source validate`', NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-303', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-7', '以下の exposure 定義に不足している必須フィールドは？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-303', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-7', '以下の exposure 定義に不足している必須フィールドは？
 ```yaml
 exposures:
   - name: weekly_report
@@ -4295,7 +4295,7 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-309-opt-2', 'card-dbt-ae-309', 2, 'C', '`result:modified`', NULL);
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-309-opt-3', 'card-dbt-ae-309', 3, 'D', '`diff:changed`', NULL);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-310', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-8', '`dbt run --defer --state ./prod-artifacts --select state:modified` の各フラグの役割を対応させよ。
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-310', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-8', '`dbt run --defer --state ./prod-artifacts --select state:modified` の各フラグの役割を対応させよ。
 | 左列 | 右列 |
 |---|---|
 | 1. `--defer` | a. 変更されたモデルのみを選択 |
@@ -4439,7 +4439,7 @@ INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_ord
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-317-ans-3', 'card-dbt-ae-317', 'card-dbt-ae-317-opt-3', NULL, 0);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-317-ans-4', 'card-dbt-ae-317', 'card-dbt-ae-317-opt-4', NULL, 1);
 
-INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-318', 'deck-dbt-ae', 'single_select', 'topic-dbt-ae-8', '以下のCIコマンドで `--state` フラグ使用時にエラーになる原因は？
+INSERT OR IGNORE INTO cards (id, deck_id, type, topic_id, question, explanation, source_url) VALUES ('card-dbt-ae-318', 'deck-dbt-ae', 'free_recall', 'topic-dbt-ae-8', '以下のCIコマンドで `--state` フラグ使用時にエラーになる原因は？
 ```bash
 dbt run --select state:modified
 ```', '**`--state` フラグでアーティファクトのパスが指定されていない**。
