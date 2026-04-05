@@ -18,6 +18,7 @@ interface Option {
 	label: string | null
 	body: string
 	group_name: string | null
+	explanation: string | null
 }
 
 interface Answer {
@@ -162,27 +163,39 @@ export function ReviewFlow({
 
 			{/* Select options */}
 			{!isSpecialType && hasOptions && (
-				<div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
-					{selectOptions.map(o => {
-						const isSel = selected.includes(o.position)
-						const showRes = phase !== 'answering'
-						const isAns = correctPositions.includes(o.position)
-						const wasSel = selected.includes(o.position)
-						let cls = 'option-btn'
-						if (isSel && !showRes) cls += ' selected'
-						if (showRes && isAns) cls += ' correct'
-						if (showRes && wasSel && !isAns) cls += ' incorrect'
-						return (
-							<button key={o.id} className={cls} onClick={() => toggleOption(o.position)} disabled={phase !== 'answering'}>
-								<span className={`option-label${showRes && isAns ? ' correct' : ''}${showRes && wasSel && !isAns ? ' incorrect' : ''}${isSel && !showRes ? ' selected' : ''}`}>
-									{o.label || String.fromCharCode(65 + o.position)}
-								</span>
-								<span className="option-body" dangerouslySetInnerHTML={{ __html: o.body.replace(/`([^`]+)`/g, '<code>$1</code>') }} />
-								{showRes && isAns && <span className="result-icon"><Check size={18} weight="bold" color="#4ade80" /></span>}
-								{showRes && wasSel && !isAns && <span className="result-icon"><X size={18} weight="bold" color="#f87171" /></span>}
-							</button>
-						)
-					})}
+				<div>
+					{isMulti && phase === 'answering' && (
+						<p className="select-hint">複数選択してください（チェックボックス）</p>
+					)}
+					<div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
+						{selectOptions.map(o => {
+							const isSel = selected.includes(o.position)
+							const showRes = phase !== 'answering'
+							const isAns = correctPositions.includes(o.position)
+							const wasSel = selected.includes(o.position)
+							let cls = 'option-btn'
+							if (isSel && !showRes) cls += ' selected'
+							if (showRes && isAns) cls += ' correct'
+							if (showRes && wasSel && !isAns) cls += ' incorrect'
+							return (
+								<button key={o.id} className={cls} onClick={() => toggleOption(o.position)} disabled={phase !== 'answering'}>
+									<span className={`option-indicator ${isMulti ? 'checkbox' : 'radio'}${isSel && !showRes ? ' selected' : ''}${showRes && isAns ? ' correct' : ''}${showRes && wasSel && !isAns ? ' incorrect' : ''}`}>
+										{showRes && isAns && <Check size={12} weight="bold" />}
+										{showRes && wasSel && !isAns && <X size={12} weight="bold" />}
+										{!showRes && isSel && (isMulti ? <Check size={12} weight="bold" /> : <span className="radio-dot" />)}
+									</span>
+									<span className="option-content">
+										<span className="option-body" dangerouslySetInnerHTML={{ __html: o.body.replace(/`([^`]+)`/g, '<code>$1</code>') }} />
+										{showRes && o.explanation && (
+											<span className={`option-explanation ${isAns ? 'correct' : 'incorrect'}`}>
+												{o.explanation}
+											</span>
+										)}
+									</span>
+								</button>
+							)
+						})}
+					</div>
 				</div>
 			)}
 
