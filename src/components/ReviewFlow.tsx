@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { Surface, Button, Text } from '@cloudflare/kumo'
 import { ArrowLeft, Check, X, ArrowRight, BookOpenText, Flag } from '@phosphor-icons/react'
+import { MatchingGame } from './MatchingGame'
 
 interface Card {
 	id: string
@@ -81,9 +82,10 @@ export function ReviewFlow({
 		}
 	}, [phase, isMulti])
 
+	const isMatching = card.type === 'matching'
+
 	const submit = useCallback(() => {
 		if (!hasOptions) {
-			// 選択肢なしカードは解説表示のみ
 			setIsCorrect(true)
 			setPhase('result')
 			return
@@ -95,6 +97,11 @@ export function ReviewFlow({
 		setIsCorrect(correct)
 		setPhase('result')
 	}, [selected, correctPositions, hasOptions])
+
+	const handleMatchingComplete = useCallback((correct: boolean) => {
+		setIsCorrect(correct)
+		setPhase('result')
+	}, [])
 
 	const rate = useCallback(async (quality: number) => {
 		setIsSubmitting(true)
@@ -153,15 +160,27 @@ export function ReviewFlow({
 				/>
 			</Surface>
 
-			{/* Options */}
-			{options.filter(o => !o.group_name).length === 0 && phase === 'answering' && (
+			{/* Matching Game */}
+			{isMatching && (
+				<div style={{ marginBottom: 24 }}>
+					<MatchingGame
+						options={options}
+						answers={answers}
+						onComplete={handleMatchingComplete}
+						disabled={phase !== 'answering'}
+					/>
+				</div>
+			)}
+
+			{/* Options (select系) */}
+			{!isMatching && options.filter(o => !o.group_name).length === 0 && phase === 'answering' && (
 				<div style={{ textAlign: 'center', padding: '20px 0', marginBottom: 24 }}>
-					<Text style={{ color: 'var(--kumo-color-text-subtle)', fontSize: 14, display: 'block', marginBottom: 12 }}>
+					<Text style={{ color: '#9ca3af', fontSize: 14, display: 'block', marginBottom: 12 }}>
 						考えがまとまったら答えを確認しましょう
 					</Text>
 				</div>
 			)}
-			<div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
+			{!isMatching && <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
 				{options
 					.filter(o => !o.group_name)
 					.map(o => {
@@ -195,10 +214,10 @@ export function ReviewFlow({
 							</button>
 						)
 					})}
-			</div>
+			</div>}
 
 			{/* Submit */}
-			{phase === 'answering' && (
+			{phase === 'answering' && !isMatching && (
 				<Button
 					variant="primary"
 					size="lg"
