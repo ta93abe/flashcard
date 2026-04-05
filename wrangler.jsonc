@@ -7,7 +7,13 @@
     {
       "binding": "DB",
       "database_name": "flashcard-db",
-      "database_id": "local"
+      "database_id": "b22d5e71-13b7-47ed-a30a-84176c97e079"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "flashcard-bucket"
     }
   ]
 }
