@@ -34,6 +34,8 @@ interface ReviewFlowProps {
 	progressTotal: number
 	questionHtml: string
 	explanationHtml: string
+	nextUrl?: string
+	isExamMode?: boolean
 }
 
 type Phase = 'answering' | 'result' | 'rating'
@@ -50,6 +52,7 @@ const RATINGS = [
 export function ReviewFlow({
 	deckId, deckName, card, options, answers, topicName,
 	progressCurrent, progressTotal, questionHtml, explanationHtml,
+	nextUrl, isExamMode,
 }: ReviewFlowProps) {
 	const [phase, setPhase] = useState<Phase>('answering')
 	const [selected, setSelected] = useState<number[]>([])
@@ -100,7 +103,7 @@ export function ReviewFlow({
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ card_id: card.id, quality }),
 			})
-			window.location.href = `/review/${deckId}`
+			window.location.href = nextUrl || `/review/${deckId}`
 		} catch {
 			setIsSubmitting(false)
 		}
@@ -116,7 +119,8 @@ export function ReviewFlow({
 					<ArrowLeft size={14} /> デッキ一覧
 				</a>
 				<Text style={{ fontSize: 13, color: 'var(--kumo-color-text-subtle)' }}>
-					{progressCurrent} / {progressTotal}
+					{isExamMode && <span style={{ marginRight: 8, color: '#fbbf24', fontWeight: 600 }}>模擬試験</span>}
+					{progressCurrent + 1} / {progressTotal}
 				</Text>
 			</div>
 

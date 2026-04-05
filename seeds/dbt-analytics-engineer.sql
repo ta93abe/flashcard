@@ -4469,3 +4469,4 @@ INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_na
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-320-opt-2', 'card-dbt-ae-320', 2, 'C', 'DWH上のデータの変更', NULL);
 INSERT OR IGNORE INTO card_options (id, card_id, position, label, body, group_name) VALUES ('card-dbt-ae-320-opt-3', 'card-dbt-ae-320', 3, 'D', 'マクロの変更', NULL);
 INSERT OR IGNORE INTO card_answers (id, card_id, option_id, text_value, sort_order) VALUES ('card-dbt-ae-320-ans-0', 'card-dbt-ae-320', 'card-dbt-ae-320-opt-2', NULL, NULL);
+-- regenerated Sun Apr  5 23:30:18 JST 2026

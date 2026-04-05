@@ -35,7 +35,7 @@ export function DeckList({ decks }: { decks: DeckWithStats[] }) {
 										{deck.description}
 									</Text>
 								)}
-								<div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+								<div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
 									<Badge color="blue">{deck.cardCount} 問</Badge>
 									{deck.dueCount > 0 ? (
 										<Badge color="orange">{deck.dueCount} 復習待ち</Badge>
@@ -44,6 +44,15 @@ export function DeckList({ decks }: { decks: DeckWithStats[] }) {
 											<Trophy size={12} weight="bold" style={{ marginRight: 4 }} />
 											完了
 										</Badge>
+									)}
+									{deck.exam_id && (
+										<a
+											href={`/review/${deck.id}?mode=exam`}
+											onClick={(e) => e.stopPropagation()}
+											style={{ fontSize: 12, color: '#fbbf24', textDecoration: 'none', fontWeight: 600, padding: '2px 8px', border: '1px solid #fbbf24', borderRadius: 4 }}
+										>
+											模擬試験
+										</a>
 									)}
 								</div>
 							</div>
