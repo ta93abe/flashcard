@@ -1,0 +1,331 @@
+---
+import { env } from 'cloudflare:workers'
+import Base from '@/layouts/Base.astro'
+
+const db = env.DB
+
+const { results: checks } = await db.prepare(`
+	SELECT fc.*, c.question, c.type, d.name as deck_name
+	FROM fact_checks fc
+	JOIN cards c ON fc.card_id = c.id
+	JOIN decks d ON c.deck_id = d.id
+	ORDER BY fc.checked_at DESC
+	LIMIT 100
+`).all()
+
+const stats = await db.prepare(`
+	SELECT
+		COUNT(*) as total,
+		SUM(CASE WHEN verdict = 'correct' THEN 1 ELSE 0 END) as correct,
+		SUM(CASE WHEN verdict = 'incorrect' THEN 1 ELSE 0 END) as incorrect,
+		SUM(CASE WHEN verdict = 'needs_revision' THEN 1 ELSE 0 END) as needs_revision,
+		SUM(CASE WHEN action_taken = 'updated' THEN 1 ELSE 0 END) as updated
+	FROM fact_checks
+`).first<{ total: number; correct: number; incorrect: number; needs_revision: number; updated: number }>()
+
+const recentCount = await db.prepare(`
+	SELECT COUNT(*) as cnt FROM fact_checks WHERE checked_at >= datetime('now', '-7 days')
+`).first<{ cnt: number }>()
+
+const totalCards = await db.prepare('SELECT COUNT(*) as cnt FROM cards').first<{ cnt: number }>()
+
+function formatDate(iso: string) {
+	const d = new Date(iso + 'Z')
+	return d.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
+
+function verdictLabel(v: string) {
+	switch (v) {
+		case 'correct': return '正確'
+		case 'incorrect': return '不正確'
+		case 'needs_revision': return '要修正'
+		default: return v
+	}
+}
+
+function verdictColor(v: string) {
+	switch (v) {
+		case 'correct': return '#4ade80'
+		case 'incorrect': return '#f87171'
+		case 'needs_revision': return '#fbbf24'
+		default: return '#8888a4'
+	}
+}
+---
+
+<Base title="ファクトチェック履歴">
+	<div style="margin-bottom: 24px;">
+		<a href="/" style="color: var(--kumo-color-text-subtle, #8888a4); text-decoration: none; font-size: 14px;">&lsaquo; デッキ一覧</a>
+	</div>
+
+	<h1>ファクトチェック履歴</h1>
+	<p style="color: var(--kumo-color-text-subtle, #8888a4); font-size: 14px; margin-bottom: 24px;">
+		AIが問題と回答の正確性を自動検証した記録
+	</p>
+
+	<!-- サマリーカード -->
+	<div class="stats-grid">
+		<div class="stat-card">
+			<span class="stat-num">{stats?.total ?? 0}</span>
+			<span class="stat-label">総チェック数</span>
+		</div>
+		<div class="stat-card">
+			<span class="stat-num" style="color: #4ade80;">{stats?.correct ?? 0}</span>
+			<span class="stat-label">正確</span>
+		</div>
+		<div class="stat-card">
+			<span class="stat-num" style="color: #f87171;">{stats?.incorrect ?? 0}</span>
+			<span class="stat-label">不正確</span>
+		</div>
+		<div class="stat-card">
+			<span class="stat-num" style="color: #fbbf24;">{stats?.needs_revision ?? 0}</span>
+			<span class="stat-label">要修正</span>
+		</div>
+		<div class="stat-card">
+			<span class="stat-num" style="color: #60a5fa;">{stats?.updated ?? 0}</span>
+			<span class="stat-label">自動修正済</span>
+		</div>
+		<div class="stat-card">
+			<span class="stat-num">{recentCount?.cnt ?? 0} / {totalCards?.cnt ?? 0}</span>
+			<span class="stat-label">直近7日カバー</span>
+		</div>
+	</div>
+
+	<!-- チェック履歴 -->
+	{(checks as any[]).length === 0 ? (
+		<div class="empty-state">
+			<p>ファクトチェック履歴はまだありません。</p>
+			<p class="hint">POST /api/batch/fact-check で実行できます。</p>
+		</div>
+	) : (
+		<div class="check-list">
+			{(checks as any[]).map((fc: any) => (
+				<div class={`check-card ${fc.action_taken === 'updated' ? 'updated' : ''}`}>
+					<div class="check-header">
+						<span class="verdict-badge" style={`color: ${verdictColor(fc.verdict)}; border-color: ${verdictColor(fc.verdict)};`}>
+							{verdictLabel(fc.verdict)}
+						</span>
+						<span class="confidence">{Math.round(fc.confidence * 100)}%</span>
+						<span class="check-date">{formatDate(fc.checked_at)}</span>
+						{fc.action_taken === 'updated' && (
+							<span class="action-badge">自動修正</span>
+						)}
+						{fc.action_taken === 'flagged' && (
+							<span class="action-badge flagged">要確認</span>
+						)}
+					</div>
+
+					<div class="check-question">
+						<span class="deck-tag">{fc.deck_name}</span>
+						<span class="type-tag">{fc.type}</span>
+						<p class="question-preview">{fc.question.slice(0, 120)}{fc.question.length > 120 ? '...' : ''}</p>
+					</div>
+
+					<div class="check-reason">
+						<span class="reason-label">根拠:</span>
+						{fc.reason}
+					</div>
+
+					{fc.old_question && (
+						<div class="diff-section">
+							<div class="diff-label">修正前:</div>
+							<div class="diff-old">{fc.old_question.slice(0, 200)}</div>
+						</div>
+					)}
+
+					{fc.suggestion && (() => {
+						try {
+							const s = JSON.parse(fc.suggestion)
+							return (s.question || s.explanation || s.answer) ? (
+								<div class="diff-section">
+									<div class="diff-label">修正提案:</div>
+									{s.question && <div class="diff-new">問題: {s.question.slice(0, 200)}</div>}
+									{s.answer && <div class="diff-new">正解: {s.answer}</div>}
+								</div>
+							) : null
+						} catch { return null }
+					})()}
+
+					<div class="check-meta">
+						<span>モデル: {fc.model_used.split('/').pop()}</span>
+						<span>カードID: {fc.card_id.slice(0, 16)}...</span>
+					</div>
+				</div>
+			))}
+		</div>
+	)}
+</Base>
+
+<style>
+	.stats-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 12px;
+		margin-bottom: 32px;
+	}
+	@media (max-width: 640px) {
+		.stats-grid { grid-template-columns: repeat(2, 1fr); }
+	}
+	.stat-card {
+		background: var(--kumo-color-background-raised, #1a1a24);
+		border: 1px solid var(--kumo-color-border-default, #2a2a3e);
+		border-radius: 10px;
+		padding: 16px;
+		text-align: center;
+	}
+	.stat-num {
+		display: block;
+		font-size: 24px;
+		font-weight: 800;
+		margin-bottom: 4px;
+	}
+	.stat-label {
+		font-size: 11px;
+		color: var(--kumo-color-text-subtle, #8888a4);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+
+	.check-list {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.check-card {
+		background: var(--kumo-color-background-raised, #1a1a24);
+		border: 1px solid var(--kumo-color-border-default, #2a2a3e);
+		border-radius: 10px;
+		padding: 16px;
+	}
+	.check-card.updated {
+		border-left: 3px solid #60a5fa;
+	}
+
+	.check-header {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 10px;
+		flex-wrap: wrap;
+	}
+
+	.verdict-badge {
+		font-size: 12px;
+		font-weight: 700;
+		padding: 2px 8px;
+		border: 1px solid;
+		border-radius: 4px;
+	}
+
+	.confidence {
+		font-size: 12px;
+		color: var(--kumo-color-text-subtle);
+		font-weight: 600;
+	}
+
+	.check-date {
+		font-size: 12px;
+		color: var(--kumo-color-text-subtle);
+		margin-left: auto;
+	}
+
+	.action-badge {
+		font-size: 10px;
+		font-weight: 700;
+		padding: 2px 6px;
+		border-radius: 3px;
+		background: rgba(96,165,250,0.15);
+		color: #60a5fa;
+		text-transform: uppercase;
+	}
+	.action-badge.flagged {
+		background: rgba(251,191,36,0.15);
+		color: #fbbf24;
+	}
+
+	.check-question {
+		margin-bottom: 10px;
+	}
+	.deck-tag, .type-tag {
+		display: inline-block;
+		font-size: 10px;
+		padding: 1px 6px;
+		border-radius: 3px;
+		margin-right: 6px;
+		margin-bottom: 6px;
+	}
+	.deck-tag { background: rgba(99,102,241,0.15); color: #a5b4fc; }
+	.type-tag { background: rgba(255,255,255,0.06); color: var(--kumo-color-text-subtle); }
+
+	.question-preview {
+		font-size: 14px;
+		line-height: 1.6;
+		margin-top: 4px;
+	}
+
+	.check-reason {
+		font-size: 13px;
+		color: var(--kumo-color-text-subtle);
+		line-height: 1.6;
+		padding: 10px 12px;
+		background: rgba(255,255,255,0.02);
+		border-radius: 6px;
+		margin-bottom: 8px;
+	}
+	.reason-label {
+		font-weight: 600;
+		color: var(--kumo-color-text-default);
+		margin-right: 4px;
+	}
+
+	.diff-section {
+		font-size: 13px;
+		padding: 8px 12px;
+		margin-bottom: 6px;
+		border-radius: 6px;
+	}
+	.diff-label {
+		font-weight: 600;
+		font-size: 11px;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		margin-bottom: 4px;
+		color: var(--kumo-color-text-subtle);
+	}
+	.diff-old {
+		background: rgba(248,113,113,0.06);
+		padding: 6px 10px;
+		border-radius: 4px;
+		border-left: 2px solid #f87171;
+		color: #fca5a5;
+	}
+	.diff-new {
+		background: rgba(74,222,128,0.06);
+		padding: 6px 10px;
+		border-radius: 4px;
+		border-left: 2px solid #4ade80;
+		color: #86efac;
+		margin-top: 4px;
+	}
+
+	.check-meta {
+		display: flex;
+		gap: 16px;
+		font-size: 11px;
+		color: var(--kumo-color-text-subtle);
+		margin-top: 8px;
+		padding-top: 8px;
+		border-top: 1px solid var(--kumo-color-border-default, #2a2a3e);
+	}
+
+	.empty-state {
+		text-align: center;
+		padding: 48px 24px;
+		background: var(--kumo-color-background-raised, #1a1a24);
+		border: 1px solid var(--kumo-color-border-default, #2a2a3e);
+		border-radius: 12px;
+		color: var(--kumo-color-text-subtle);
+	}
+	.hint { font-size: 12px; margin-top: 8px; font-family: monospace; }
+</style>

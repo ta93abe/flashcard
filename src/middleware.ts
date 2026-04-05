@@ -6,6 +6,7 @@ import cards from '@/routes/cards'
 import reviews from '@/routes/reviews'
 import feedbacks from '@/routes/feedbacks'
 import guides from '@/routes/guides'
+import batch from '@/routes/batch'
 
 const api = new Hono<{ Bindings: CloudflareBindings }>()
 api.route('/api/decks', decks)
@@ -13,6 +14,7 @@ api.route('/api', cards)
 api.route('/api/review', reviews)
 api.route('/api/feedback', feedbacks)
 api.route('/api/guides', guides)
+api.route('/api/batch', batch)
 
 export const onRequest = defineMiddleware(async (context, next) => {
 	const url = new URL(context.request.url)

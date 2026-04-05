@@ -33,6 +33,12 @@ const decks = await Promise.all(
 		学習するデッキを選んでください
 	</p>
 	<DeckList decks={decks} />
+
+	<div style="margin-top: 32px; text-align: center;">
+		<a href="/fact-checks" style="color: var(--kumo-color-text-subtle, #8888a4); font-size: 13px; text-decoration: none;">
+			ファクトチェック履歴 &rarr;
+		</a>
+	</div>
 </Base>
 
 <style>

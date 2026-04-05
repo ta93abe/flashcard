@@ -4,6 +4,7 @@ import cards from '@/routes/cards'
 import reviews from '@/routes/reviews'
 import feedbacks from '@/routes/feedbacks'
 import guides from '@/routes/guides'
+import batch from '@/routes/batch'
 
 const app = new Hono<{ Bindings: CloudflareBindings }>()
 
@@ -12,5 +13,6 @@ app.route('/api', cards)
 app.route('/api/review', reviews)
 app.route('/api/feedback', feedbacks)
 app.route('/api/guides', guides)
+app.route('/api/batch', batch)
 
 export default app

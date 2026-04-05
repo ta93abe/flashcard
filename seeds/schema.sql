@@ -103,6 +103,21 @@ CREATE TABLE IF NOT EXISTS card_tags (
   PRIMARY KEY (card_id, tag_id)
 );
 
+-- ファクトチェック記録
+CREATE TABLE IF NOT EXISTS fact_checks (
+  id            TEXT PRIMARY KEY,
+  card_id       TEXT NOT NULL REFERENCES cards(id),
+  verdict       TEXT NOT NULL,          -- 'correct' | 'incorrect' | 'needs_revision'
+  confidence    REAL NOT NULL,          -- 0.0-1.0
+  reason        TEXT NOT NULL,          -- 判定理由
+  suggestion    TEXT,                   -- 修正提案 (JSON: { question?, explanation?, answer? })
+  action_taken  TEXT,                   -- 'none' | 'updated' | 'flagged'
+  old_question  TEXT,                   -- 修正前の問題文 (変更があった場合)
+  old_answer    TEXT,                   -- 修正前の正解 (変更があった場合)
+  model_used    TEXT NOT NULL,          -- 使用したAIモデル
+  checked_at    TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 -- 学習記録 (SM-2パラメータ)
 CREATE TABLE IF NOT EXISTS reviews (
   id           TEXT PRIMARY KEY,
