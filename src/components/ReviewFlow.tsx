@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { Surface, Button, Badge, Text, Meter } from '@cloudflare/kumo'
-import { ArrowLeft, Check, X, ArrowRight, BookOpenText } from '@phosphor-icons/react'
+import { ArrowLeft, Check, X, ArrowRight, BookOpenText, Flag } from '@phosphor-icons/react'
 
 interface Card {
 	id: string
@@ -58,6 +58,7 @@ export function ReviewFlow({
 	const [selected, setSelected] = useState<number[]>([])
 	const [isCorrect, setIsCorrect] = useState(false)
 	const [isSubmitting, setIsSubmitting] = useState(false)
+	const [flagged, setFlagged] = useState(false)
 
 	const isMulti = card.type === 'multi_select' || card.type === 'domc'
 	const hasOptions = options.filter(o => !o.group_name).length > 0
@@ -108,6 +109,15 @@ export function ReviewFlow({
 			setIsSubmitting(false)
 		}
 	}, [card.id, deckId])
+
+	const flagCard = useCallback(async () => {
+		setFlagged(true)
+		await fetch('/api/feedback', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ card_id: card.id, type: 'ambiguous', comment: 'ユーザーが問題に問題ありとフラグ' }),
+		})
+	}, [card.id])
 
 	const progressPct = progressTotal > 0 ? Math.round((progressCurrent / progressTotal) * 100) : 0
 
@@ -229,13 +239,28 @@ export function ReviewFlow({
 								className="prose" style={{ fontSize: 14, lineHeight: 1.8 }}
 								dangerouslySetInnerHTML={{ __html: explanationHtml }}
 							/>
-							{card.source_url && (
-								<a href={card.source_url} target="_blank" rel="noopener"
-									style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 12, fontSize: 12, color: 'var(--kumo-color-text-link)' }}
+							<div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 12 }}>
+								{card.source_url && (
+									<a href={card.source_url} target="_blank" rel="noopener"
+										style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--kumo-color-text-link)' }}
+									>
+										<BookOpenText size={14} /> 公式ドキュメント
+									</a>
+								)}
+								<button
+									onClick={flagCard}
+									disabled={flagged}
+									style={{
+										display: 'inline-flex', alignItems: 'center', gap: 4,
+										fontSize: 12, color: flagged ? '#4ade80' : 'var(--kumo-color-text-subtle)',
+										background: 'none', border: 'none', cursor: flagged ? 'default' : 'pointer',
+										marginLeft: 'auto', padding: '4px 8px', borderRadius: 4,
+									}}
 								>
-									<BookOpenText size={14} /> 公式ドキュメント
-								</a>
-							)}
+									<Flag size={14} weight={flagged ? 'fill' : 'regular'} />
+									{flagged ? '報告済み' : '問題を報告'}
+								</button>
+							</div>
 						</Surface>
 					)}
 
