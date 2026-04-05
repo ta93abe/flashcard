@@ -18,10 +18,15 @@ const decks = await Promise.all(
 			'SELECT COUNT(*) as cnt FROM reviews r JOIN cards c ON r.card_id = c.id WHERE c.deck_id = ? AND r.next_review <= ?'
 		).bind(deck.id, today).first<{ cnt: number }>()
 
+		const reviewedRow = await db.prepare(
+			'SELECT COUNT(DISTINCT r.card_id) as cnt FROM reviews r JOIN cards c ON r.card_id = c.id WHERE c.deck_id = ?'
+		).bind(deck.id).first<{ cnt: number }>()
+
 		return {
 			...deck,
 			cardCount: countRow?.cnt ?? 0,
 			dueCount: dueRow?.cnt ?? 0,
+			reviewedCount: reviewedRow?.cnt ?? 0,
 		}
 	})
 )

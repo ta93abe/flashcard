@@ -2,6 +2,7 @@
 import { env } from 'cloudflare:workers'
 import Base from '@/layouts/Base.astro'
 import { ReviewFlow, ReviewEmpty } from '@/components/ReviewFlow'
+import { ExamResult } from '@/components/ExamResult'
 import { renderQuestionMarkdown, renderExplanationMarkdown } from '@/lib/markdown'
 
 const { deckId } = Astro.params
@@ -110,6 +111,15 @@ const progressTotal = isExamMode ? examTotal : (totalRow?.cnt ?? 0)
 const nextUrl = isExamMode
 	? `/review/${deckId}?mode=exam&session=${examSession}&q=${examIndex + 1}`
 	: `/review/${deckId}`
+
+// 模擬試験完了時のスコア計算
+let examCorrectCount = 0
+if (isExamMode && !card) {
+	const scoreRow = await db.prepare(
+		'SELECT COUNT(*) as cnt FROM reviews r JOIN cards c ON r.card_id = c.id WHERE c.deck_id = ? AND r.last_quality >= 3'
+	).bind(deckId!).first<{ cnt: number }>()
+	examCorrectCount = Math.min(scoreRow?.cnt ?? 0, examTotal)
+}
 ---
 
 <Base title={`${deck.name} — ${isExamMode ? '模擬試験' : '学習'}`}>
@@ -130,18 +140,15 @@ const nextUrl = isExamMode
 			isExamMode={isExamMode}
 		/>
 	) : isExamMode ? (
-		<div class="exam-complete fade-in">
-			<div style="text-align: center; padding: 60px 20px;">
-				<div style="font-size: 48px; margin-bottom: 16px;">&#127942;</div>
-				<h2 style="margin-bottom: 8px;">模擬試験完了!</h2>
-				<p style="color: var(--kumo-color-text-subtle); margin-bottom: 24px;">
-					{examTotal}問すべてに回答しました。
-				</p>
-				<div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-					<a href={`/review/${deckId}?mode=exam`} class="btn-restart">もう1回受験する</a>
-					<a href="/" class="btn-back">デッキ一覧に戻る</a>
-				</div>
-			</div>
+		<div class="fade-in">
+			<ExamResult
+				client:load
+				deckId={deckId!}
+				deckName={deck.name}
+				totalQuestions={examTotal}
+				correctCount={examCorrectCount}
+				passingScore={65}
+			/>
 		</div>
 	) : (
 		<ReviewEmpty client:load deckId={deckId!} deckName={deck.name} />
@@ -285,6 +292,124 @@ const nextUrl = isExamMode
 	.matching-item.correct .matching-dot-left { background: #4ade80; }
 	.matching-item.incorrect .matching-dot,
 	.matching-item.incorrect .matching-dot-left { background: #f87171; }
+
+	/* Flip animation */
+	.flip-container { perspective: 1000px; }
+	.flip-card { animation: flipIn 0.5s ease-out; }
+	@keyframes flipIn {
+		from { transform: rotateX(-90deg); opacity: 0; }
+		to { transform: rotateX(0); opacity: 1; }
+	}
+
+	/* Result banner */
+	.result-banner {
+		padding: 14px 18px;
+		margin-bottom: 16px;
+		border-radius: 10px;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		font-weight: 700;
+		font-size: 16px;
+	}
+	.result-banner.correct {
+		background: rgba(74,222,128,0.1);
+		border: 1px solid rgba(74,222,128,0.3);
+		color: #4ade80;
+	}
+	.result-banner.incorrect {
+		background: rgba(248,113,113,0.1);
+		border: 1px solid rgba(248,113,113,0.3);
+		color: #f87171;
+	}
+
+	/* Explanation box */
+	.explanation-box {
+		background: #1a1a2e;
+		border: 1px solid #2a2a42;
+		border-radius: 10px;
+		padding: 24px;
+		margin-bottom: 20px;
+	}
+	.explanation-label {
+		font-size: 11px;
+		color: #6b7280;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		margin-bottom: 12px;
+		font-weight: 600;
+	}
+	.source-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		font-size: 12px;
+		color: #6366f1;
+		text-decoration: none;
+	}
+	.source-link:hover { text-decoration: underline; }
+	.flag-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		font-size: 12px;
+		color: #6b7280;
+		background: none;
+		border: none;
+		cursor: pointer;
+		margin-left: auto;
+		padding: 4px 8px;
+		border-radius: 4px;
+	}
+	.flag-btn:disabled { color: #4ade80; cursor: default; }
+	.next-btn {
+		display: flex !important;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+	}
+
+	/* Ordering */
+	.ordering-label {
+		font-size: 13px;
+		color: #6b7280;
+		margin-bottom: 12px;
+		text-align: center;
+	}
+	.ordering-list { display: flex; flex-direction: column; gap: 8px; }
+	.ordering-item {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 14px 16px;
+		background: #1e1e2e;
+		border: 2px solid #2a2a42;
+		border-radius: 10px;
+		cursor: grab;
+		transition: 0.2s;
+		user-select: none;
+		font-size: 14px;
+	}
+	.ordering-item:active { cursor: grabbing; }
+	.ordering-item.dragging { opacity: 0.3; }
+	.ordering-item.drag-over {
+		border-color: #6366f1;
+		transform: scale(1.02);
+		box-shadow: 0 4px 16px rgba(99,102,241,0.15);
+	}
+	.ordering-item.correct { border-color: #4ade80; background: rgba(74,222,128,0.08); }
+	.ordering-item.incorrect { border-color: #f87171; background: rgba(248,113,113,0.08); }
+	.ordering-handle { color: #4b5563; font-size: 18px; cursor: grab; flex-shrink: 0; }
+	.ordering-number {
+		width: 24px; height: 24px;
+		display: flex; align-items: center; justify-content: center;
+		border-radius: 6px;
+		font-weight: 700; font-size: 12px;
+		background: rgba(255,255,255,0.06);
+		color: #9ca3af;
+		flex-shrink: 0;
+	}
+	.ordering-body { flex: 1; }
 
 	.tag {
 		display: inline-block;

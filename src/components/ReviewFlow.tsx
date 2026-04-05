@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react'
-import { Surface, Button, Text } from '@cloudflare/kumo'
+import { Surface, Text } from '@cloudflare/kumo'
 import { ArrowLeft, Check, X, ArrowRight, BookOpenText, Flag } from '@phosphor-icons/react'
 import { MatchingGame } from './MatchingGame'
+import { OrderingGame } from './OrderingGame'
 
 interface Card {
 	id: string
@@ -22,6 +23,7 @@ interface Option {
 interface Answer {
 	id: string
 	option_id: string | null
+	sort_order: number | null
 }
 
 interface ReviewFlowProps {
@@ -39,16 +41,7 @@ interface ReviewFlowProps {
 	isExamMode?: boolean
 }
 
-type Phase = 'answering' | 'result' | 'rating'
-
-const RATINGS = [
-	{ n: 0, label: '全くわからない', color: '#f87171' },
-	{ n: 1, label: 'かなり難しい', color: '#fb923c' },
-	{ n: 2, label: '迷って不正解', color: '#fbbf24' },
-	{ n: 3, label: '迷ったが正解', color: '#a3e635' },
-	{ n: 4, label: '少し迷った', color: '#4ade80' },
-	{ n: 5, label: '完璧', color: '#22d3ee' },
-] as const
+type Phase = 'answering' | 'result'
 
 export function ReviewFlow({
 	deckId, deckName, card, options, answers, topicName,
@@ -58,11 +51,14 @@ export function ReviewFlow({
 	const [phase, setPhase] = useState<Phase>('answering')
 	const [selected, setSelected] = useState<number[]>([])
 	const [isCorrect, setIsCorrect] = useState(false)
-	const [isSubmitting, setIsSubmitting] = useState(false)
 	const [flagged, setFlagged] = useState(false)
 
 	const isMulti = card.type === 'multi_select' || card.type === 'domc'
-	const hasOptions = options.filter(o => !o.group_name).length > 0
+	const isMatching = card.type === 'matching'
+	const isOrdering = card.type === 'ordering'
+	const isSpecialType = isMatching || isOrdering
+	const selectOptions = options.filter(o => !o.group_name)
+	const hasOptions = selectOptions.length > 0
 	const correctPositions = answers
 		.filter(a => a.option_id)
 		.map(a => {
@@ -74,48 +70,39 @@ export function ReviewFlow({
 	const toggleOption = useCallback((pos: number) => {
 		if (phase !== 'answering') return
 		if (isMulti) {
-			setSelected(prev =>
-				prev.includes(pos) ? prev.filter(p => p !== pos) : [...prev, pos]
-			)
+			setSelected(prev => prev.includes(pos) ? prev.filter(p => p !== pos) : [...prev, pos])
 		} else {
 			setSelected([pos])
 		}
 	}, [phase, isMulti])
 
-	const isMatching = card.type === 'matching'
+	// 回答を自動記録して次へ進む
+	const recordAndNext = useCallback(async (correct: boolean) => {
+		setIsCorrect(correct)
+		setPhase('result')
+		// quality: 正解=4, 不正解=1 でSM-2に記録
+		await fetch('/api/review/answer', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ card_id: card.id, quality: correct ? 4 : 1 }),
+		}).catch(() => {})
+	}, [card.id])
 
 	const submit = useCallback(() => {
-		if (!hasOptions) {
-			setIsCorrect(true)
-			setPhase('result')
+		if (!hasOptions && !isSpecialType) {
+			recordAndNext(true)
 			return
 		}
 		const sortedSel = [...selected].sort()
 		const sortedCorr = [...correctPositions].sort()
 		const correct = sortedSel.length === sortedCorr.length &&
 			sortedSel.every((v, i) => v === sortedCorr[i])
-		setIsCorrect(correct)
-		setPhase('result')
-	}, [selected, correctPositions, hasOptions])
+		recordAndNext(correct)
+	}, [selected, correctPositions, hasOptions, isSpecialType, recordAndNext])
 
-	const handleMatchingComplete = useCallback((correct: boolean) => {
-		setIsCorrect(correct)
-		setPhase('result')
-	}, [])
-
-	const rate = useCallback(async (quality: number) => {
-		setIsSubmitting(true)
-		try {
-			await fetch('/api/review/answer', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ card_id: card.id, quality }),
-			})
-			window.location.href = nextUrl || `/review/${deckId}`
-		} catch {
-			setIsSubmitting(false)
-		}
-	}, [card.id, deckId])
+	const goNext = useCallback(() => {
+		window.location.href = nextUrl || `/review/${deckId}`
+	}, [nextUrl, deckId])
 
 	const flagCard = useCallback(async () => {
 		setFlagged(true)
@@ -132,13 +119,13 @@ export function ReviewFlow({
 		<div className="fade-in">
 			{/* Header */}
 			<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-				<a href="/" style={{ color: 'var(--kumo-color-text-subtle)', textDecoration: 'none', fontSize: 14, display: 'flex', alignItems: 'center', gap: 4 }}>
+				<a href="/" style={{ color: '#9ca3af', textDecoration: 'none', fontSize: 14, display: 'flex', alignItems: 'center', gap: 4 }}>
 					<ArrowLeft size={14} /> デッキ一覧
 				</a>
-				<Text style={{ fontSize: 13, color: 'var(--kumo-color-text-subtle)' }}>
+				<span style={{ fontSize: 13, color: '#9ca3af' }}>
 					{isExamMode && <span style={{ marginRight: 8, color: '#fbbf24', fontWeight: 600 }}>模擬試験</span>}
 					{progressCurrent + 1} / {progressTotal}
-				</Text>
+				</span>
 			</div>
 
 			{/* Progress */}
@@ -154,155 +141,102 @@ export function ReviewFlow({
 
 			{/* Question */}
 			<Surface style={{ padding: 28, marginBottom: 24 }}>
-				<div
-					className="prose" style={{ fontSize: 16, lineHeight: 1.8 }}
+				<div className="prose" style={{ fontSize: 16, lineHeight: 1.8 }}
 					dangerouslySetInnerHTML={{ __html: questionHtml }}
 				/>
 			</Surface>
 
-			{/* Matching Game */}
+			{/* Matching */}
 			{isMatching && (
 				<div style={{ marginBottom: 24 }}>
-					<MatchingGame
-						options={options}
-						answers={answers}
-						onComplete={handleMatchingComplete}
-						disabled={phase !== 'answering'}
-					/>
+					<MatchingGame options={options} answers={answers} onComplete={recordAndNext} disabled={phase !== 'answering'} />
 				</div>
 			)}
 
-			{/* Options (select系) */}
-			{!isMatching && options.filter(o => !o.group_name).length === 0 && phase === 'answering' && (
-				<div style={{ textAlign: 'center', padding: '20px 0', marginBottom: 24 }}>
-					<Text style={{ color: '#9ca3af', fontSize: 14, display: 'block', marginBottom: 12 }}>
-						考えがまとまったら答えを確認しましょう
-					</Text>
+			{/* Ordering */}
+			{isOrdering && (
+				<div style={{ marginBottom: 24 }}>
+					<OrderingGame options={selectOptions} answers={answers} onComplete={recordAndNext} disabled={phase !== 'answering'} />
 				</div>
 			)}
-			{!isMatching && <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
-				{options
-					.filter(o => !o.group_name)
-					.map(o => {
-						const isSelected = selected.includes(o.position)
-						const showResult = phase !== 'answering'
-						const isAnswer = correctPositions.includes(o.position)
-						const wasSelected = selected.includes(o.position)
 
-						let className = 'option-btn'
-						if (isSelected && !showResult) className += ' selected'
-						if (showResult && isAnswer) className += ' correct'
-						if (showResult && wasSelected && !isAnswer) className += ' incorrect'
-
+			{/* Select options */}
+			{!isSpecialType && hasOptions && (
+				<div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
+					{selectOptions.map(o => {
+						const isSel = selected.includes(o.position)
+						const showRes = phase !== 'answering'
+						const isAns = correctPositions.includes(o.position)
+						const wasSel = selected.includes(o.position)
+						let cls = 'option-btn'
+						if (isSel && !showRes) cls += ' selected'
+						if (showRes && isAns) cls += ' correct'
+						if (showRes && wasSel && !isAns) cls += ' incorrect'
 						return (
-							<button
-								key={o.id}
-								className={className}
-								onClick={() => toggleOption(o.position)}
-								disabled={phase !== 'answering'}
-							>
-								<span className={`option-label${showResult && isAnswer ? ' correct' : ''}${showResult && wasSelected && !isAnswer ? ' incorrect' : ''}${isSelected && !showResult ? ' selected' : ''}`}>
+							<button key={o.id} className={cls} onClick={() => toggleOption(o.position)} disabled={phase !== 'answering'}>
+								<span className={`option-label${showRes && isAns ? ' correct' : ''}${showRes && wasSel && !isAns ? ' incorrect' : ''}${isSel && !showRes ? ' selected' : ''}`}>
 									{o.label || String.fromCharCode(65 + o.position)}
 								</span>
 								<span className="option-body" dangerouslySetInnerHTML={{ __html: o.body.replace(/`([^`]+)`/g, '<code>$1</code>') }} />
-								{showResult && isAnswer && (
-									<span className="result-icon"><Check size={18} weight="bold" color="#4ade80" /></span>
-								)}
-								{showResult && wasSelected && !isAnswer && (
-									<span className="result-icon"><X size={18} weight="bold" color="#f87171" /></span>
-								)}
+								{showRes && isAns && <span className="result-icon"><Check size={18} weight="bold" color="#4ade80" /></span>}
+								{showRes && wasSel && !isAns && <span className="result-icon"><X size={18} weight="bold" color="#f87171" /></span>}
 							</button>
 						)
 					})}
-			</div>}
-
-			{/* Submit */}
-			{phase === 'answering' && !isMatching && (
-				<Button
-					variant="primary"
-					size="lg"
-					className="submit-btn"
-					onClick={submit}
-					disabled={hasOptions && selected.length === 0}
-				>
-					{hasOptions ? '回答する' : '答えを見る'}
-				</Button>
+				</div>
 			)}
 
-			{/* Result + Explanation */}
+			{/* No options prompt */}
+			{!isSpecialType && !hasOptions && phase === 'answering' && (
+				<div style={{ textAlign: 'center', padding: '20px 0', marginBottom: 24 }}>
+					<p style={{ color: '#9ca3af', fontSize: 14 }}>考えがまとまったら答えを確認しましょう</p>
+				</div>
+			)}
+
+			{/* Submit (select系のみ) */}
+			{phase === 'answering' && !isSpecialType && (
+				<button className="submit-btn" onClick={submit} disabled={hasOptions && selected.length === 0}>
+					{hasOptions ? '回答する' : '答えを見る'}
+				</button>
+			)}
+
+			{/* Result */}
 			{phase === 'result' && (
-				<div className="fade-in">
-					{/* Result banner */}
-					<Surface
-						style={{
-							padding: '14px 18px',
-							marginBottom: 16,
-							display: 'flex',
-							alignItems: 'center',
-							gap: 10,
-							border: `1px solid ${isCorrect ? '#4ade80' : '#f87171'}`,
-							background: isCorrect ? 'rgba(74,222,128,0.08)' : 'rgba(248,113,113,0.08)',
-						}}
-					>
-						{isCorrect
-							? <><Check size={22} weight="bold" color="#4ade80" /><Text style={{ fontWeight: 600, color: '#4ade80' }}>正解!</Text></>
-							: <><X size={22} weight="bold" color="#f87171" /><Text style={{ fontWeight: 600, color: '#f87171' }}>不正解</Text></>
-						}
-					</Surface>
+				<div className="flip-container">
+					<div className="flip-card">
+						{/* Result banner */}
+						<div className={`result-banner ${isCorrect ? 'correct' : 'incorrect'}`}>
+							{isCorrect
+								? <><Check size={22} weight="bold" color="#4ade80" /><span>正解!</span></>
+								: <><X size={22} weight="bold" color="#f87171" /><span>不正解</span></>
+							}
+						</div>
 
-					{/* Explanation */}
-					{card.explanation && (
-						<Surface style={{ padding: 24, marginBottom: 24 }}>
-							<Text style={{ fontSize: 12, color: 'var(--kumo-color-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12, display: 'block' }}>
-								解説
-							</Text>
-							<div
-								className="prose" style={{ fontSize: 14, lineHeight: 1.8 }}
-								dangerouslySetInnerHTML={{ __html: explanationHtml }}
-							/>
-							<div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 12 }}>
-								{card.source_url && (
-									<a href={card.source_url} target="_blank" rel="noopener"
-										style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--kumo-color-text-link)' }}
-									>
-										<BookOpenText size={14} /> 公式ドキュメント
-									</a>
-								)}
-								<button
-									onClick={flagCard}
-									disabled={flagged}
-									style={{
-										display: 'inline-flex', alignItems: 'center', gap: 4,
-										fontSize: 12, color: flagged ? '#4ade80' : 'var(--kumo-color-text-subtle)',
-										background: 'none', border: 'none', cursor: flagged ? 'default' : 'pointer',
-										marginLeft: 'auto', padding: '4px 8px', borderRadius: 4,
-									}}
-								>
-									<Flag size={14} weight={flagged ? 'fill' : 'regular'} />
-									{flagged ? '報告済み' : '問題を報告'}
-								</button>
+						{/* Explanation */}
+						{card.explanation && (
+							<div className="explanation-box">
+								<div className="explanation-label">解説</div>
+								<div className="prose" style={{ fontSize: 14, lineHeight: 1.8 }}
+									dangerouslySetInnerHTML={{ __html: explanationHtml }}
+								/>
+								<div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 12 }}>
+									{card.source_url && (
+										<a href={card.source_url} target="_blank" rel="noopener" className="source-link">
+											<BookOpenText size={14} /> 公式ドキュメント
+										</a>
+									)}
+									<button onClick={flagCard} disabled={flagged} className="flag-btn">
+										<Flag size={14} weight={flagged ? 'fill' : 'regular'} />
+										{flagged ? '報告済み' : '問題を報告'}
+									</button>
+								</div>
 							</div>
-						</Surface>
-					)}
+						)}
 
-					{/* Rating */}
-					<div style={{ textAlign: 'center', marginBottom: 16 }}>
-						<Text style={{ fontSize: 14, color: 'var(--kumo-color-text-subtle)' }}>
-							理解度を評価してください
-						</Text>
-					</div>
-					<div className="rating-grid">
-						{RATINGS.map(r => (
-							<button
-								key={r.n}
-								className="rating-btn"
-								onClick={() => rate(r.n)}
-								disabled={isSubmitting}
-							>
-								<span className="rating-num" style={{ color: r.color }}>{r.n}</span>
-								<span className="rating-label">{r.label}</span>
-							</button>
-						))}
+						{/* Next button */}
+						<button className="submit-btn next-btn" onClick={goNext}>
+							次の問題へ <ArrowRight size={16} weight="bold" />
+						</button>
 					</div>
 				</div>
 			)}
@@ -314,16 +248,13 @@ export function ReviewEmpty({ deckId, deckName }: { deckId: string; deckName: st
 	return (
 		<div style={{ textAlign: 'center', padding: '80px 20px' }} className="fade-in">
 			<div style={{ fontSize: 48, marginBottom: 16 }}>&#127881;</div>
-			<Text style={{ fontSize: 20, fontWeight: 700, display: 'block', marginBottom: 8 }}>
-				すべて完了!
-			</Text>
-			<Text style={{ color: 'var(--kumo-color-text-subtle)', display: 'block', marginBottom: 24 }}>
+			<h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>すべて完了!</h2>
+			<p style={{ color: '#9ca3af', marginBottom: 24 }}>
 				復習が必要なカードはありません。<br />新しいカードで学習を始めましょう。
-			</Text>
-			<Button onClick={() => window.location.href = `/review/${deckId}?mode=new`}>
+			</p>
+			<a href={`/review/${deckId}?mode=new`} className="submit-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
 				<ArrowRight size={16} /> 新しいカードで学習
-			</Button>
+			</a>
 		</div>
 	)
 }
-
